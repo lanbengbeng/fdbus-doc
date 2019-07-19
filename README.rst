@@ -3,25 +3,26 @@ Introduction
 
 ``FDBus`` is a middleware development framework targeting the following objectives:
 
-* Inter-Process Communication (IPC) within single host and cross the network
-* System abstraction (Windows, Linux, QNX)
-* Components based on which middleware is built (job, worker, timer, watch...)
+- Inter-Process Communication (IPC) within single host and cross the network
+- System abstraction (Windows, Linux, QNX)
+- Components based on which middleware is built (job, worker, timer, watch...)
 
 It is something like ``DBus`` or ``SOME/IP``, but with its own characteristic:
 
-* :command:`Distributed`: unlike DBus, it has no central hub
-* :command:`High performance`: endpoints talk to each other directly
-* :command:`Addressing by name`: service is addressable through logic name
-* :command:`Address allocation`: service address is allocated dynamically
-* :command:`Networking`: communication inside host and cross hosts
-* :command:`IDL and code generation`: using protocol buffer
-* :command:`Total slution`: it is more than an IPC machanism. it is a middleware development framework
+- :command:`Distributed`: unlike DBus, it has no central hub
+- :command:`High performance`: endpoints talk to each other directly
+- :command:`Addressing by name`: service is addressable through logic name
+- :command:`Address allocation`: service address is allocated dynamically
+- :command:`Networking`: communication inside host and cross hosts
+- :command:`IDL and code generation`: using protocol buffer
+- :command:`Total slution`: it is more than an IPC machanism. it is a middleware development framework
 
 Its usage can be found in the following fields:
-* Infotainment; instrument cluster, TBox and other ECU with posix-compatible OS running
-* Inter VM communication between guest OSes in hypervisor
-* SOHO Gateway
-* Instrument for distributed industry control
+
+- Infotainment; instrument cluster, TBox and other ECU with posix-compatible OS running
+- Inter VM communication between guest OSes in hypervisor
+- SOHO Gateway
+- Instrument for distributed industry control
 
 Supported system
 ----------------
@@ -47,16 +48,25 @@ https://blog.csdn.net/jeremy_cz/article/details/89060291
 How to build
 ------------
 >>>> For Ubuntu host version (running at host machine)
+
 Dependence:
 - cmake, gcc are installed
+
 1. build protocol buffer
+
+.. code-block:: bash
+
     1.1 cd ~/workspace
     1.2 git clone https://github.com/protocolbuffers/protobuf.git #get protobuf source code
     1.3 cd protobuf;git submodule update --init --recursive
     1.4 mkdir -p build/install;cd build #create directory for out-of-source build
     1.5 cmake -DCMAKE_INSTALL_PREFIX=install -DBUILD_SHARED_LIBS=1 ../cmake
     1.6 make -j4 install #build and install to build/install directory
+
 2. build fdbus
+
+.. code-block:: bash
+
     2.1 cd ~/workspace
     2.2 git clone https://github.com/jeremyczhen/fdbus.git #get fdbus source code
     2.3 cd fdbus;mkdir -p build/install;cd build #create directory for out-of-source build
@@ -64,9 +74,15 @@ Dependence:
     2.5 PATH=~/workspace/protobuf/build/install/bin:$PATH make #set PATH to the directory where protoc can be found
 
 >>>> For cross compiling on Ubuntu (target version)
+
 Dependence:
+
 - cmake, gcc and toolchain are installed
+
 1 build protocol buffer
+
+.. code-block:: bash
+
     1.1 cd ~/workspace
     1.2 create toolchain.cmake #create toolchain.cmake and set g++ and gcc for target build in cmake/toolchain.cmake (see below)
     1.3 git clone https://github.com/protocolbuffers/protobuf.git protobuf-host #get protobuf source code for host build
@@ -78,7 +94,11 @@ Dependence:
     1.9 cd ../../protobuf-target;mkdir -p build/install;cd build #create directory for out-of-source build
     1.10 cmake -DCMAKE_INSTALL_PREFIX=install -DBUILD_SHARED_LIBS=1 -DCMAKE_TOOLCHAIN_FILE=../../toolchain.cmake ../cmake
     1.11 PATH=~/workspace/protobuf-host/build/install/bin:$PATH make -j4 install #build and install to build/install directory
+
 2. build fdbus
+
+.. code-block:: bash
+
     2.1 cd ~/workspace
     2.2 git clone https://github.com/jeremyczhen/fdbus.git
     2.3 cd fdbus;mkdir -p build/install;cd build
@@ -86,19 +106,31 @@ Dependence:
     2.5 PATH=~/workspace/protobuf-host/build/install/bin:$PATH make #set PATH to the directory where protoc can be found
 
 >>>> For QNX
+
 The same as cross compiling, but when building fdbus, should add the following option to cmake since QNX doesn't support peercred:
+
 -Dfdbus_SOCKET_ENABLE_PEERCRED=OFF
 
 >>>> For Windows version
+
 Dependence:
+
 - cmake, msvc are installed
+
 1 build protocol buffer
+
+.. code-block:: bash
+
     1.1 cd c:\workspace
     1.2 #suppose source code of protocol buffer is already downloaded and placed at c:\workspace\protobuf
     1.3 cd protobuf;mkdir -p cbuild\install;cd cbuild #create directory for out-of-source build
     1.4 cmake -DCMAKE_INSTALL_PREFIX=install ..\cmake
     1.5 open protobuf.sln in c:\workspace\protobuf\cbuild and build project INSTALL
+
 2. build fdbus
+
+.. code-block:: bash
+
     2.1 cd ~/workspace
     2.2 #suppose source code of fdbus is already downloaded and placed at c:\workspace\fdbus
     2.3 cd fdbus;mkdir -p build\install;cd build #create directory for out-of-source build
@@ -109,25 +141,30 @@ Dependence:
 How to run
 ----------
 >>>> For single host
-1. start name server:
-> name_server
-2. start clients/servers
+
+- 1. start name server:
+- > name_server
+- 2. start clients/servers
 
 >>>> For multi-host
-1. start name server at host1:
-host1> name_server
-2. start host server at host1:
-host1> host_server
-3. start name server at host2:
-host2> name_server -u tcp://ip_of_host1:60000
-4. start clients/servers at host1 and host2
+
+- 1. start name server at host1:
+- host1> name_server
+- 2. start host server at host1:
+- host1> host_server
+- 3. start name server at host2:
+- host2> name_server -u tcp://ip_of_host1:60000
+- 4. start clients/servers at host1 and host2
 
 example of toolchain.cmake for cross-compiling
 ----------------------------------------------
->>>> cat toolchain.cmake
-SET(CMAKE_SYSTEM_NAME Linux)
-SET(CMAKE_CXX_COMPILER ~/project/android/workspace/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-gnu-7.1.1/bin/aarch64-linux-gnu-g++)
-SET(CMAKE_C_COMPILER ~/project/android/workspace/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-gnu-7.1.1/bin/aarch64-linux-gnu-gcc)
+
+.. code-block:: bash
+
+    >>>> cat toolchain.cmake
+    SET(CMAKE_SYSTEM_NAME Linux)
+    SET(CMAKE_CXX_COMPILER ~/project/android/workspace/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-gnu-7.1.1/bin/aarch64-linux-gnu-g++)
+    SET(CMAKE_C_COMPILER ~/project/android/workspace/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-gnu-7.1.1/bin/aarch64-linux-gnu-gcc)
 
 cmake options
 -------------
@@ -167,18 +204,20 @@ cmake options
 Security concept
 ----------------
 >>>> Authentication of client:
-1. server registers its name to name server;
-2. name server reply with URL and token;
-3. server binds to the URL and holds the token;
-4. client requests name resolution from name server;
-5. name server authenticate client by checking peercred(SO_PEERCRED option of socket), including
+
+- 1. server registers its name to name server;
+- 2. name server reply with URL and token;
+- 3. server binds to the URL and holds the token;
+- 4. client requests name resolution from name server;
+- 5. name server authenticate client by checking peercred(SO_PEERCRED option of socket), including
     UID, GID of the client
-6. if success, name server gives URL and token of requested server to the client
-7. client connects to the server with URL followed by sending the token to the server
-8. server verify the token and grant the connection if pass; for unauthorized client, since it does not
+- 6. if success, name server gives URL and token of requested server to the client
+- 7. client connects to the server with URL followed by sending the token to the server
+- 8. server verify the token and grant the connection if pass; for unauthorized client, since it does not
     have a valid token, server will drop the connection 
-9. name server can assign multiple tokens to server but only send one of them to the client according
+- 9. name server can assign multiple tokens to server but only send one of them to the client according
     to security level of the client
 
 >>>> Authenication of host:
+
 TBD
