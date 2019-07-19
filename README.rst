@@ -47,9 +47,11 @@ https://blog.csdn.net/jeremy_cz/article/details/89060291
 
 How to build
 ------------
->>>> For Ubuntu host version (running at host machine)
+For Ubuntu host version (running at host machine)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Dependence:
+
 - cmake, gcc are installed
 
 1. build protocol buffer
@@ -73,7 +75,8 @@ Dependence:
    2.4 cmake -DSYSTEM_ROOT=~/workspace/protobuf/build/install -DCMAKE_INSTALL_PREFIX=install ../cmake
    2.5 PATH=~/workspace/protobuf/build/install/bin:$PATH make #set PATH to the directory where protoc can be found
 
->>>> For cross compiling on Ubuntu (target version)
+For cross compiling on Ubuntu (target version)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Dependence:
 
@@ -105,13 +108,17 @@ Dependence:
    2.4 cmake -DSYSTEM_ROOT=~/workspace/protobuf-target/build/install -DCMAKE_INSTALL_PREFIX=install -DCMAKE_TOOLCHAIN_FILE=../../toolchain.cmake ../cmake
    2.5 PATH=~/workspace/protobuf-host/build/install/bin:$PATH make #set PATH to the directory where protoc can be found
 
->>>> For QNX
+For QNX
+^^^^^^^
 
 The same as cross compiling, but when building fdbus, should add the following option to cmake since QNX doesn't support peercred:
 
--Dfdbus_SOCKET_ENABLE_PEERCRED=OFF
+.. code-block:: bash
 
->>>> For Windows version
+   -Dfdbus_SOCKET_ENABLE_PEERCRED=OFF
+
+For Windows version
+^^^^^^^^^^^^^^^^^^^
 
 Dependence:
 
@@ -140,21 +147,26 @@ Dependence:
 
 How to run
 ----------
->>>> For single host
+For single host
+^^^^^^^^^^^^^^^
 
-- 1. start name server:
-- > name_server
-- 2. start clients/servers
+.. code-block:: bash
 
->>>> For multi-host
+   1. start name server:
+   > name_server
+   2. start clients/servers
 
-- 1. start name server at host1:
-- host1> name_server
-- 2. start host server at host1:
-- host1> host_server
-- 3. start name server at host2:
-- host2> name_server -u tcp://ip_of_host1:60000
-- 4. start clients/servers at host1 and host2
+For multi-host
+^^^^^^^^^^^^^^
+
+.. code-block:: bash
+
+   1. start name server at host1:
+   host1> name_server
+   2. start host server at host1:
+   3. start name server at host2:
+   host2> name_server -u tcp://ip_of_host1:60000
+   4. start clients/servers at host1 and host2
 
 example of toolchain.cmake for cross-compiling
 ----------------------------------------------
@@ -168,57 +180,62 @@ example of toolchain.cmake for cross-compiling
 
 cmake options
 -------------
->>>> The following options can be specified with -Dfdbus_XXX=ON/OFF when running cmake
+>>>> The following options can be specified with ``-Dfdbus_XXX=ON/OFF`` when running ``cmake``
+
 - fdbus_BUILD_TESTS
    * ON : build examples
-     OFF: don't build examples
+   * OFF: don't build examples
 - fdbus_ENABLE_LOG
    * ON : enable log output of fdbus lib
-     OFF: disable log output of fdbus lib
+   * OFF: disable log output of fdbus lib
 - fdbus_LOG_TO_STDOUT 
-     ON : send fdbus log to stdout (terminal)
+   * ON : send fdbus log to stdout (terminal)
    * OFF: fdbus log is sent to log server
 - fdbus_ENABLE_MESSAGE_METADATA
    * ON : time stamp is included in fdbus message to track delay of message during request-reply interaction
-     OFF: time stamp is disabled
+   * OFF: time stamp is disabled
 - fdbus_SOCKET_BLOCKING_CONNECT
-     ON : socket method connect() will be blocked forever if server is not ready to accept
+   * ON : socket method connect() will be blocked forever if server is not ready to accept
    * OFF: connect() will be blocked with timer to avoid permanent blocking
 - fdbus_SOCKET_ENABLE_PEERCRED
    * ON : peercred of UDS (Unix Domain Socket) is enabled
-     OFF: peercred of UDS is disabled
+   * OFF: peercred of UDS is disabled
 - fdbus_ALLOC_PORT_BY_SYSTEM
-     ON : socket number of servers are allocated by the system
+   * ON : socket number of servers are allocated by the system
    * OFF: socket number of servers are allocated by name server
 - fdbus_SECURITY
-     ON : enable security
+   * ON : enable security
    * OFF: disable security
->>>> The following options can be specified with -DMACRO_DEF='VARIABLE=value;VARIABLE=value'
+   
+>>>> The following options can be specified with ``-DMACRO_DEF='VARIABLE=value;VARIABLE=value'``
+
 - FDB_CFG_SOCKET_PATH
-   specify directory of UDS file
-   default: /tmp
+   * specify directory of UDS file
+   * default: /tmp
+   
 - CONFIG_SOCKET_CONNECT_TIMEOUT
-   specify timeout of connect() when connect to socket server in ms. "0" means block forever.
-   default: 2000
+   * specify timeout of connect() when connect to socket server in ms. "0" means block forever.
+   * default: 2000
 
 Security concept
 ----------------
->>>> Authentication of client:
+Authentication of client:
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- 1. server registers its name to name server;
-- 2. name server reply with URL and token;
-- 3. server binds to the URL and holds the token;
-- 4. client requests name resolution from name server;
-- 5. name server authenticate client by checking peercred(SO_PEERCRED option of socket), including
-    UID, GID of the client
-- 6. if success, name server gives URL and token of requested server to the client
-- 7. client connects to the server with URL followed by sending the token to the server
-- 8. server verify the token and grant the connection if pass; for unauthorized client, since it does not
-    have a valid token, server will drop the connection 
-- 9. name server can assign multiple tokens to server but only send one of them to the client according
-    to security level of the client
+.. code-block:: bash
 
->>>> Authenication of host:
+   1. server registers its name to name server;
+   2. name server reply with URL and token;
+   3. server binds to the URL and holds the token;
+   4. client requests name resolution from name server;
+   5. name server authenticate client by checking peercred(SO_PEERCRED option of socket), including UID, GID of the client
+   6. if success, name server gives URL and token of requested server to the client
+   7. client connects to the server with URL followed by sending the token to the server
+   8. server verify the token and grant the connection if pass; for unauthorized client, since it does not have a valid token, server will drop the connection 
+   9. name server can assign multiple tokens to server but only send one of them to the client according to security level of the client
+
+Authenication of host:
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 TBD
 
