@@ -110,4 +110,15 @@ that you have to pay for closed source software.
 Mainstream IPC framework comparison
 -----------------------------------
 
++--------+-------------------+---------+--------------+-----------+--------------------+----------+----------+------------+
+| Bottom |    performance    |  Sync   | Asynchronous |  Request  |     Cross-host     | Message  |  Cross-  |  security  |
+| layer  |                   | request |   request    | timed out |                    |  push    | platform |  strategy  |
++========+===================+=========+==============+===========+====================+=====================+============+
+| Socket | Point-to-point,   |   YES   |      YES     |    YES    | YES                | YES      | Window   |  YES       |
+|        | high performance, |         |              |           | with timeout       | with     | Linux    | Developing |
+|        | second only to    |         |              |           | and heartbeat      | simple   | QNX      |            |
+|        | Binder            |         |              |           | to ensure reliable | string   |          |            |
+|        |                   |         |              |           | connection         | matching |          |            |
++--------+-------------------+---------+--------------+-----------+--------------------+----------+----------+------------+
+
 
