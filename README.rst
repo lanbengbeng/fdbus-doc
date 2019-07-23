@@ -56,7 +56,7 @@ Dependence:
 
 1. build protocol buffer
 
-.. code-block:: console
+.. code-block:: bash
 
    1.1 cd ~/workspace
    1.2 git clone https://github.com/protocolbuffers/protobuf.git #get protobuf source code
@@ -67,7 +67,7 @@ Dependence:
 
 2. build fdbus
 
-.. code-block:: console
+.. code-block:: bash
 
    2.1 cd ~/workspace
    2.2 git clone https://github.com/jeremyczhen/fdbus.git #get fdbus source code
@@ -84,7 +84,7 @@ Dependence:
 
 1 build protocol buffer
 
-.. code-block:: console
+.. code-block:: bash
 
    1.1 cd ~/workspace
    1.2 create toolchain.cmake #create toolchain.cmake and set g++ and gcc for target build in cmake/toolchain.cmake (see below)
@@ -100,7 +100,7 @@ Dependence:
 
 2. build fdbus
 
-.. code-block:: console
+.. code-block:: bash
 
    2.1 cd ~/workspace
    2.2 git clone https://github.com/jeremyczhen/fdbus.git
@@ -113,7 +113,7 @@ For QNX
 
 The same as cross compiling, but when building fdbus, should add the following option to cmake since QNX doesn't support peercred:
 
-.. code-block:: console
+.. code-block:: bash
 
    -Dfdbus_SOCKET_ENABLE_PEERCRED=OFF
 
@@ -126,7 +126,7 @@ Dependence:
 
 1 build protocol buffer
 
-.. code-block:: console
+.. code-block:: bash
 
    1.1 cd c:\workspace
    1.2 #suppose source code of protocol buffer is already downloaded and placed at c:\workspace\protobuf
@@ -136,7 +136,7 @@ Dependence:
 
 2. build fdbus
 
-.. code-block:: console
+.. code-block:: bash
 
    2.1 cd ~/workspace
    2.2 #suppose source code of fdbus is already downloaded and placed at c:\workspace\fdbus
@@ -150,7 +150,7 @@ How to run
 For single host
 ^^^^^^^^^^^^^^^
 
-.. code-block:: console
+.. code-block:: bash
 
    1. start name server:
       > name_server
@@ -159,7 +159,7 @@ For single host
 For multi-host
 ^^^^^^^^^^^^^^
 
-.. code-block:: console
+.. code-block:: bash
 
    1. start name server at host1:
       host1> name_server
@@ -171,7 +171,7 @@ For multi-host
 example of toolchain.cmake for cross-compiling
 ----------------------------------------------
 
-.. code-block:: console
+.. code-block:: bash
 
    >>>> cat toolchain.cmake
    SET(CMAKE_SYSTEM_NAME Linux)
@@ -186,41 +186,42 @@ cmake options
    The following options can be specified with ``-Dfdbus_XXX=ON/OFF`` when running ``cmake``
 
 ``fdbus_BUILD_TESTS``
-    ``ON`` : build examples
-    ``OFF``: don't build examples
+ | ``ON`` : build examples
+ | ``OFF``: don't build examples
 ``fdbus_ENABLE_LOG``
-    ``ON`` : enable log output of fdbus lib
-    ``OFF``: disable log output of fdbus lib
+ | ``ON`` : enable log output of fdbus lib
+ | ``OFF``: disable log output of fdbus lib
 ``fdbus_LOG_TO_STDOUT``
-    ``ON`` : send fdbus log to stdout (terminal)
-    ``OFF``: fdbus log is sent to log server
+ | ``ON`` : send fdbus log to stdout (terminal)
+ | ``OFF``: fdbus log is sent to log server
 ``fdbus_ENABLE_MESSAGE_METADATA``
-    ``ON`` : time stamp is included in fdbus message to track delay of message during request-reply interaction
-    ``OFF``: time stamp is disabled
+ | ``ON`` : time stamp is included in fdbus message to track delay of message during request-reply interaction
+ | ``OFF``: time stamp is disabled
 ``fdbus_SOCKET_BLOCKING_CONNECT``
-    ``ON`` : socket method connect() will be blocked forever if server is not ready to accept
-    ``OFF``: connect() will be blocked with timer to avoid permanent blocking
+ | ``ON`` : socket method connect() will be blocked forever if server is not ready to accept
+ | ``OFF``: connect() will be blocked with timer to avoid permanent blocking
 ``fdbus_SOCKET_ENABLE_PEERCRED``
-    ``ON`` : peercred of UDS (Unix Domain Socket) is enabled
-    ``OFF``: peercred of UDS is disabled
+ | ``ON`` : peercred of UDS (Unix Domain Socket) is enabled
+ | ``OFF``: peercred of UDS is disabled
 ``fdbus_ALLOC_PORT_BY_SYSTEM``
-    ``ON`` : socket number of servers are allocated by the system
-    ``OFF``: socket number of servers are allocated by name server
+ | ``ON`` : socket number of servers are allocated by the system
+ | ``OFF``: socket number of servers are allocated by name server
 ``fdbus_SECURITY``
-    ``ON`` : enable security
-    ``OFF``: disable security
+ | ``ON`` : enable security
+ | ``OFF``: disable security
 
 .. note::
 
    The following options can be specified with 
    ``-DMACRO_DEF='VARIABLE=value;VARIABLE=value'``
 
-``FDB_CFG_SOCKET_PATH``
-    specify directory of UDS file
-    default: /tmp
+:``FDB_CFG_SOCKET_PATH``:
+ | specify directory of UDS file
+ | default: /tmp
    
-``CONFIG_SOCKET_CONNECT_TIMEOUT``
+:CONFIG_SOCKET_CONNECT_TIMEOUT:
     specify timeout of connect() when connect to socket server in ms. "0" means block forever.
+    
     default: 2000
 
 Security concept
