@@ -183,7 +183,8 @@ cmake options
 
 .. note::
 
-   The following options can be specified with ``-Dfdbus_XXX=ON/OFF`` when running ``cmake``
+   The following options can be specified with ``-Dfdbus_XXX=ON/OFF`` when running ``cmake``.
+   The status with ``*`` is set as default.
 
 ``fdbus_BUILD_TESTS``
  | *``ON`` : build examples
@@ -219,32 +220,31 @@ cmake options
  | specify directory of UDS file
  | default: /tmp
 
-CONFIG_SOCKET_CONNECT_TIMEOUT: 
- specify timeout of connect() when connect to socket server in ms. 
- "``0``" means block forever.
- 
- default: 2000
+``CONFIG_SOCKET_CONNECT_TIMEOUT``
+ | specify timeout of connect() when connect to socket server in ms. 
+   "``0``" means block forever.
+ | default: 2000
 
 Security concept
 ----------------
 Authentication of client:
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- 1. server registers its name to ``name server``;
-- 2. ``name server`` reply with URL and token;
-- 3. server binds to the URL and holds the token;
-- 4. client requests name resolution from ``name server``;
-- 5. ``name server`` authenticate client by checking peercred
-  (``SO_PEERCRED`` option of socket), including ``UID``, ``GID`` of the client
-- 6. if success, ``name server`` gives URL and token of requested server to
-  the client
-- 7. client connects to the server with URL followed by sending the token 
-  to the server
-- 8. server verify the token and grant the connection if pass; 
-  for unauthorized client, since it does not have a valid token, server will 
-  drop the connection 
-- 9. ``name server`` can assign multiple tokens to server but only send one 
-  of them to the client according to security level of the client
+ | 1. server registers its name to ``name server``;
+ | 2. ``name server`` reply with URL and token;
+ | 3. server binds to the URL and holds the token;
+ | 4. client requests name resolution from ``name server``;
+ | 5. ``name server`` authenticate client by checking peercred
+   (``SO_PEERCRED`` option of socket), including ``UID``, ``GID`` of the client
+ | 6. if success, ``name server`` gives URL and token of requested server to
+   the client
+ | 7. client connects to the server with URL followed by sending the token 
+   to the server
+ | 8. server verify the token and grant the connection if pass; 
+   for unauthorized client, since it does not have a valid token, server will 
+   drop the connection 
+ | 9. ``name server`` can assign multiple tokens to server but only send one 
+   of them to the client according to security level of the client
 
 Authenication of host
 ^^^^^^^^^^^^^^^^^^^^^
