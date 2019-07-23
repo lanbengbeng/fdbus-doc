@@ -110,15 +110,75 @@ that you have to pay for closed source software.
 Mainstream IPC framework comparison
 -----------------------------------
 
-+------+--------+-------------------+---------+--------------+-----------+--------------------+----------+----------+------------+
-|      || Bottom||performance       || Sync   || Asynchronous|| Request  ||    Cross-host     || Message || Cross-  || security  |
-|      || layer |                   || request||  request    || timed out|                    || push    || platform|| strategy  |
-+======+========+===================+=========+==============+===========+====================+==========+==========+============+
-|FDBus | Socket || Point-to-point,  |   YES   |      YES     |    YES    || YES               || YES     || Window  || YES       |
-|      |        || high performance,|         |              |           || with timeout      || with    || Linux   || Developing|
-|      |        || second only to   |         |              |           || and heartbeat     || simple  || QNX     |            |
-|      |        || Binder           |         |              |           || to ensure reliable|| string  |          |            |
-|      |        |                   |         |              |           || connection        || matching|          |            |
-+------+--------+-------------------+---------+--------------+-----------+--------------------+----------+----------+------------+
++------+--------+-----------------+---------+--------------+-----------+--------------------+----------+----------+------------+
+|      || Bottom| performance     || Sync   || Asynchronous|| Request  ||    Cross-host     || Message || Cross-  || security  |
+|      || layer |                 || request||  request    || timed out|                    || push    || platform|| strategy  |
++======+========+=================+=========+==============+===========+====================+==========+==========+============+
+|FDBus | Socket || Point-to-point,|   YES   |      YES     |    YES    || YES               || YES     || Window  || YES       |
+|      |        || high           |         |              |           || with timeout      || with    || Linux   || Developing|
+|      |        || performance,   |         |              |           || and heartbeat     || simple  || QNX     |            |
+|      |        || second only to |         |              |           || to ensure reliable|| string  |          |            |
+|      |        || Binder         |         |              |           || connection        || matching|          |            |
++------+--------+-----------------+---------+--------------+-----------+--------------------+----------+----------+------------+
+|GDBus | Socket || Turned by      |    YES  |      YES     |    YES    || YES               || YES     || Window  || YES       |
+|      |        || daemon,        |         |              |           || but needed        || with    || Linux   || Developing|
+|      |        || lower          |         |              |           || maintaining       || complex || QNX     |            |
+|      |        || performance    |         |              |           || reconnection when || matching|          |            |
+|      |        |                 |         |              |           || network fails     ||         |          |            |
++------+--------+-----------------+---------+--------------+-----------+--------------------+----------+----------+------------+
+|Binder|| Binder|| Direct copy,   |   YES   || YES         || YES      |         NO         || YES     || Only    | YES        |
+|      || driver|| highest        |         || but need to || but need |                    || but need|| Linux,  |            |
+|      |        || performance,   |         || use a       || to       |                    || to use a|| requires|            |
+|      |        ||                |         || callback    || increase |                    || callback|| kernel  |            |
+|      |        |                 |         || package     |           |                    || package || driver  |            |
++------+--------+-----------------+---------+--------------+-----------+--------------------+----------+----------+------------+
+
+Middleware model based on FDBus
+-------------------------------
+
+The following figure is an example of a middleware layer based on ``FDBus`` development:
+
+.. image:: ./images/1.png
+  :width: 600px
+
+The middleware layer contains multiple processes, whether they are on the same host system or 
+on different host systems. Each process can run multiple threads. FDBus runs a specific event 
+loop on a thread basis, enhancing the generic thread to a worker thread capable of executing jobs, 
+timers, and watches. The communication side of ``FDBus``: client and server are collectively called 
+endpoint. Endpoints can be deployed on different workers; multiple endpoints can also share the 
+same worker. "Endpoint deployed on the worker" means that the event processing of the endpoint 
+is executed on the worker. For example, the server processes the client request on the specified 
+worker; the client processes the asynchronous reply and the broadcast event of the server on the 
+specified worker. Middleware developers can use a worker to handle multiple endpoint events 
+according to the actual situation, avoiding consuming too many threads, and avoiding the 
+"concurrency disaster" caused by multithreading. Developers can also use multiple workers for 
+an endpoint service. For example, endpoint can create worker threads to complete time-consuming 
+file downloads, video codecs, peripheral IO operations.
+
+
+Multi-threaded collaborative work requires that messages and data be passed between threads. 
+For example, if the file is downloaded, the endpoint should be notified for subsequent processing. 
+In the process, because the same address space can be accessed, the best communication carrier is 
+the object - both data can be carried and the data can be processed. Job is the object that 
+``FDBus`` transfers between threads, and realizes inter-process communication through the transfer 
+and execution of jobs between threads.
+
+A more important feature of FDBus is interprocess communication (``IPC``). Objects cannot be 
+directly passed between processes, can only interact in the form of messages, and need to be 
+serialized during message transmission. After receiving the message, deserialization is required. 
+Each ``IPC`` mechanism, including ``Binder``, ``SOME/IP``, and ``DBus``, has its own serialization 
+method. The quality of serialization directly affects communication efficiency, load, support for 
+data structures, and ease of use. FDBus does not have its own serialization method, directly uses 
+google protocol buffer, easy to use, full-featured, and supports idl automatic code generation. 
+Data is communicated between processes using sockets, including Unix Domain Sockets (``UDS``) and 
+``TCP`` sockets. Which type is used, the system will automatically choose according to the deployment 
+of Client and Server: if ``UDS`` is used inside the same host, otherwise ``TCP`` socket is used. 
+For ``Windows``, since ``UDS`` is not supported, all ``TCP`` sockets are used.
+
+FDBus addressing and networking
+-------------------------------
+
+Server address
+^^^^^^^^^^^^^^
 
 
