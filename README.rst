@@ -186,43 +186,44 @@ cmake options
    The following options can be specified with ``-Dfdbus_XXX=ON/OFF`` when running ``cmake``
 
 ``fdbus_BUILD_TESTS``
- | ``ON`` : build examples
+ | *``ON`` : build examples
  | ``OFF``: don't build examples
 ``fdbus_ENABLE_LOG``
- | ``ON`` : enable log output of fdbus lib
+ | *``ON`` : enable log output of fdbus lib
  | ``OFF``: disable log output of fdbus lib
 ``fdbus_LOG_TO_STDOUT``
  | ``ON`` : send fdbus log to stdout (terminal)
- | ``OFF``: fdbus log is sent to log server
+ | *``OFF``: fdbus log is sent to log server
 ``fdbus_ENABLE_MESSAGE_METADATA``
- | ``ON`` : time stamp is included in fdbus message to track delay of message during request-reply interaction
+ | *``ON`` : time stamp is included in fdbus message to track delay of message during request-reply interaction
  | ``OFF``: time stamp is disabled
 ``fdbus_SOCKET_BLOCKING_CONNECT``
  | ``ON`` : socket method connect() will be blocked forever if server is not ready to accept
- | ``OFF``: connect() will be blocked with timer to avoid permanent blocking
+ | *``OFF``: connect() will be blocked with timer to avoid permanent blocking
 ``fdbus_SOCKET_ENABLE_PEERCRED``
- | ``ON`` : peercred of UDS (Unix Domain Socket) is enabled
+ | *``ON`` : peercred of UDS (Unix Domain Socket) is enabled
  | ``OFF``: peercred of UDS is disabled
 ``fdbus_ALLOC_PORT_BY_SYSTEM``
  | ``ON`` : socket number of servers are allocated by the system
- | ``OFF``: socket number of servers are allocated by name server
+ | *``OFF``: socket number of servers are allocated by name server
 ``fdbus_SECURITY``
  | ``ON`` : enable security
- | ``OFF``: disable security
+ | *``OFF``: disable security
 
 .. note::
 
    The following options can be specified with 
    ``-DMACRO_DEF='VARIABLE=value;VARIABLE=value'``
 
-:``FDB_CFG_SOCKET_PATH``:
+``FDB_CFG_SOCKET_PATH``
  | specify directory of UDS file
  | default: /tmp
-   
-:CONFIG_SOCKET_CONNECT_TIMEOUT:
-    specify timeout of connect() when connect to socket server in ms. "0" means block forever.
-    
-    default: 2000
+
+CONFIG_SOCKET_CONNECT_TIMEOUT: 
+ specify timeout of connect() when connect to socket server in ms. 
+ "``0``" means block forever.
+ 
+ default: 2000
 
 Security concept
 ----------------
@@ -233,11 +234,17 @@ Authentication of client:
 - 2. ``name server`` reply with URL and token;
 - 3. server binds to the URL and holds the token;
 - 4. client requests name resolution from ``name server``;
-- 5. ``name server`` authenticate client by checking peercred(SO_PEERCRED option of socket), including ``UID``, ``GID`` of the client
-- 6. if success, ``name server`` gives URL and token of requested server to the client
-- 7. client connects to the server with URL followed by sending the token to the server
-- 8. server verify the token and grant the connection if pass; for unauthorized client, since it does not have a valid token, server will drop the connection 
-- 9. ``name server`` can assign multiple tokens to server but only send one of them to the client according to security level of the client
+- 5. ``name server`` authenticate client by checking peercred
+  (``SO_PEERCRED`` option of socket), including ``UID``, ``GID`` of the client
+- 6. if success, ``name server`` gives URL and token of requested server to
+  the client
+- 7. client connects to the server with URL followed by sending the token 
+  to the server
+- 8. server verify the token and grant the connection if pass; 
+  for unauthorized client, since it does not have a valid token, server will 
+  drop the connection 
+- 9. ``name server`` can assign multiple tokens to server but only send one 
+  of them to the client according to security level of the client
 
 Authenication of host
 ^^^^^^^^^^^^^^^^^^^^^
