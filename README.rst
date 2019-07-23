@@ -3,19 +3,19 @@ Introduction
 
 ``FDBus`` is a middleware development framework targeting the following objectives:
 
-- Inter-Process Communication (IPC) within single host and cross the network
-- System abstraction (Windows, Linux, QNX)
+- Inter-Process Communication (``IPC``) within single host and cross the network
+- System abstraction (``Windows``, ``Linux``, ``QNX``)
 - Components based on which middleware is built (job, worker, timer, watch...)
 
 It is something like ``DBus`` or ``SOME/IP``, but with its own characteristic:
 
-- :command:`Distributed`: unlike DBus, it has no central hub
+- :command:`Distributed`: unlike ``DBus``, it has no central hub
 - :command:`High performance`: endpoints talk to each other directly
 - :command:`Addressing by name`: service is addressable through logic name
 - :command:`Address allocation`: service address is allocated dynamically
 - :command:`Networking`: communication inside host and cross hosts
 - :command:`IDL and code generation`: using protocol buffer
-- :command:`Total slution`: it is more than an IPC machanism. it is a middleware development framework
+- :command:`Total slution`: it is more than an ``IPC`` machanism. it is a middleware development framework
 
 Its usage can be found in the following fields:
 
@@ -27,9 +27,9 @@ Its usage can be found in the following fields:
 Supported system
 ----------------
 
-- Linux
-- Windows
-- QNX
+- ``Linux``
+- ``Windows``
+- ``QNX``
 
 Dependence
 ----------
@@ -153,7 +153,7 @@ For single host
 .. code-block:: bash
 
    1. start name server:
-   > name_server
+      > name_server
    2. start clients/servers
 
 For multi-host
@@ -162,10 +162,10 @@ For multi-host
 .. code-block:: bash
 
    1. start name server at host1:
-   host1> name_server
+      host1> name_server
    2. start host server at host1:
    3. start name server at host2:
-   host2> name_server -u tcp://ip_of_host1:60000
+      host2> name_server -u tcp://ip_of_host1:60000
    4. start clients/servers at host1 and host2
 
 example of toolchain.cmake for cross-compiling
@@ -180,62 +180,67 @@ example of toolchain.cmake for cross-compiling
 
 cmake options
 -------------
->>>> The following options can be specified with ``-Dfdbus_XXX=ON/OFF`` when running ``cmake``
+
+.. note::
+
+   The following options can be specified with ``-Dfdbus_XXX=ON/OFF`` when running ``cmake``
 
 - fdbus_BUILD_TESTS
-   * ON : build examples
-   * OFF: don't build examples
+  * ``ON`` : build examples
+  * ``OFF``: don't build examples
 - fdbus_ENABLE_LOG
-   * ON : enable log output of fdbus lib
-   * OFF: disable log output of fdbus lib
+  * ``ON`` : enable log output of fdbus lib
+  * ``OFF``: disable log output of fdbus lib
 - fdbus_LOG_TO_STDOUT 
-   * ON : send fdbus log to stdout (terminal)
-   * OFF: fdbus log is sent to log server
+  * ``ON`` : send fdbus log to stdout (terminal)
+  * ``OFF``: fdbus log is sent to log server
 - fdbus_ENABLE_MESSAGE_METADATA
-   * ON : time stamp is included in fdbus message to track delay of message during request-reply interaction
-   * OFF: time stamp is disabled
+  * ``ON`` : time stamp is included in fdbus message to track delay of message during request-reply interaction
+  * ``OFF``: time stamp is disabled
 - fdbus_SOCKET_BLOCKING_CONNECT
-   * ON : socket method connect() will be blocked forever if server is not ready to accept
-   * OFF: connect() will be blocked with timer to avoid permanent blocking
+  * ``ON`` : socket method connect() will be blocked forever if server is not ready to accept
+  * ``OFF``: connect() will be blocked with timer to avoid permanent blocking
 - fdbus_SOCKET_ENABLE_PEERCRED
-   * ON : peercred of UDS (Unix Domain Socket) is enabled
-   * OFF: peercred of UDS is disabled
+  * ``ON`` : peercred of UDS (Unix Domain Socket) is enabled
+  * ``OFF``: peercred of UDS is disabled
 - fdbus_ALLOC_PORT_BY_SYSTEM
-   * ON : socket number of servers are allocated by the system
-   * OFF: socket number of servers are allocated by name server
+  * ``ON`` : socket number of servers are allocated by the system
+  * ``OFF``: socket number of servers are allocated by name server
 - fdbus_SECURITY
-   * ON : enable security
-   * OFF: disable security
-   
->>>> The following options can be specified with ``-DMACRO_DEF='VARIABLE=value;VARIABLE=value'``
+  * ``ON`` : enable security
+  * ``OFF``: disable security
+
+.. note::
+
+   The following options can be specified with 
+   ``-DMACRO_DEF='VARIABLE=value;VARIABLE=value'``
 
 - FDB_CFG_SOCKET_PATH
-   * specify directory of UDS file
-   * default: /tmp
+  * specify directory of UDS file
+  * default: /tmp
    
 - CONFIG_SOCKET_CONNECT_TIMEOUT
-   * specify timeout of connect() when connect to socket server in ms. "0" means block forever.
-   * default: 2000
+  * specify timeout of connect() when connect to socket server in ms. "0" means block forever.
+  * default: 2000
 
 Security concept
 ----------------
 Authentication of client:
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code-block:: bash
+- 1. server registers its name to ``name server``;
+- 2. ``name server`` reply with URL and token;
+- 3. server binds to the URL and holds the token;
+- 4. client requests name resolution from ``name server``;
+- 5. ``name server`` authenticate client by checking peercred(SO_PEERCRED option of socket), including ``UID``, ``GID`` of the client
+- 6. if success, ``name server`` gives URL and token of requested server to the client
+- 7. client connects to the server with URL followed by sending the token to the server
+- 8. server verify the token and grant the connection if pass; for unauthorized client, since it does not have a valid token, server will drop the connection 
+- 9. ``name server`` can assign multiple tokens to server but only send one of them to the client according to security level of the client
 
-   1. server registers its name to name server;
-   2. name server reply with URL and token;
-   3. server binds to the URL and holds the token;
-   4. client requests name resolution from name server;
-   5. name server authenticate client by checking peercred(SO_PEERCRED option of socket), including UID, GID of the client
-   6. if success, name server gives URL and token of requested server to the client
-   7. client connects to the server with URL followed by sending the token to the server
-   8. server verify the token and grant the connection if pass; for unauthorized client, since it does not have a valid token, server will drop the connection 
-   9. name server can assign multiple tokens to server but only send one of them to the client according to security level of the client
-
-Authenication of host:
-^^^^^^^^^^^^^^^^^^^^^^^^^
+Authenication of host
+^^^^^^^^^^^^^^^^^^^^^
 
 TBD
+
 
