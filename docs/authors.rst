@@ -1,1 +1,6 @@
-.. include:: ../AUTHORS.rst
+Authors
+-------
+
+* Jeremy Czhen
+
+
