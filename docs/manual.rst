@@ -328,78 +328,322 @@ online and offline detection mechanisms:
 - There is heartbeat detection between the ``name server`` and the host server; once the heartbeat 
   disappears, the ``name server`` will try to reconnect with the host server to ensure the reliability of 
   the connection between the ``name server`` and the host server.
-- The connection between the ``name server`` and the ``name server`` is established by the host server. 
+- The connection between the ``name server`` and the ``name server`` is established by the host server: 
   When the ``name server`` goes online, the host server notifies all other ``name servers`` to establish a 
   connection with it, and also informs the ``name server`` to establish a connection with all other 
   ``name servers``.
-- The connection between the client and the server is established by the ``name server``. When the server 
+- The connection between the client and the server is established by the ``name server``: When the server 
   goes online, the ``name server`` notifies the client to establish a connection with it.
 
 
 Security
 --------
 
+As systems become more complex and open, security has become the focus of system architecture design. 
+An open system means that there may be intruders, and once an intruder accesses a resource that should 
+not be accessed, it may cause information leakage or destruction. On the other hand, the security of a 
+system is based on the chain of trust, and only by satisfying the necessary security foundation can build 
+its own security capabilities. For ``FDBus``, there are two prerequisites:
+
+| The most basic premise is the integrity of the ``FDBus`` itself: the ``FDBus`` library running in the 
+  system, the ``name server``, and the host server are all legal and have not been tampered with or replaced, 
+  otherwise security cannot be guaranteed anyway. This is ensured by the operating system with rights 
+  management, secure boot, ``DM-verity/FS-verity``, security upgrade, SELinux and other mechanisms.
+
+| Secondly, on the network, the ``FDBus`` message is delivered in plain text. Once someone illegally 
+  listens to the network message, it may cause information leakage and security loopholes. Therefore, 
+  another premise to discuss the security of ``FDBus`` is that the intruder cannot intercept the network 
+  packet and obtain the data transmitted by the ``FDBus`` on the link. Key data such as tokens will be 
+  encrypted in the future, but it has not been implemented yet.
+
+Based on these assumptions, the attacks faced by FDBus mainly come from three aspects: 
+- 1) The illegal host connects to the FDBus bus and runs an illegal client to access the server on other hosts; 
+- 2) Runs an illegal client on a legitimate host to access the FDBus server in the host
+- 3) A legitimate client is running a legitimate client, but tries to get data without permission or 
+  perform an operation without permission. 
+Based on the above attacks, FDBus ensures the safe operation of the system from the following aspects:
+- **Authentication of the host node**: All hosts joining the FDBus are divided into different security levels.
+- **Authentication of service access**: all clients are divided into different security levels
+- **Access restrictions**: The server's method calls and event broadcasts are divided into security levels, 
+  and the talent can call the method that matches the server security level and the event broadcast that 
+  matches the registration.
+
 Host node authentication
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
+A host must establish a connection with the host server if it wants to join the ``FDBus``. The host server 
+can authenticate the host by checking the host's IP address or MAC address, and can also determine the 
+validity of the host through the public-private key pair. For a legitimate host, the host server will 
+issue an "``ID card``" for accessing other hosts. After holding the ``ID card``, the hosts can identify each 
+other and give each other access rights.
 
+"``ID card``" is implemented by token. When the ``name server`` on the host initiates a connection, 
+the host server assigns multiple tokens to it, and each token corresponds to a security level. The following 
+table shows the token assignments for each host in a system:
+
++--------+------------------+------------------+------------------+------------------+
 |        | Security Level 0 | Security Level 1 | Security Level 2 | Security Level 3 |
-| ------ | ---------------- | ---------------- | ---------------- | ---------------- |
++========+==================+==================+==================+==================+
 | host 1 | token10          | token11          | token12          | token13          |
++--------+------------------+------------------+------------------+------------------+
 | host 2 | token20          | token21          | token22          | token23          |
++--------+------------------+------------------+------------------+------------------+
 | host 3 | token30          | token31          | token32          | token33          |
++--------+------------------+------------------+------------------+------------------+
 
+There are four security levels in the table. For host 1, the tokens corresponding to each security level 
+are token10, token11, token12, and token13. For other hosts, and so on. When the ``name server`` of the host 2 
+is connected to the ``name server`` of the host 1, it needs to hold one of the four tokens of the host 1. 
+For example, host 2 uses token 11 to connect to host 1, then in the eyes of host 1, the security level 
+of host 2 is 1; if token13 is used, the security level of host 2 is 3, and so on. The number of security 
+levels can be configured according to the project.
 
+The security level of the host is specified after the host server authenticates and authenticates the host. 
+As mentioned above, the host server can identify the host identity according to the host's MAC address or 
+other means, and then use the following configuration table to publish the tokens used by the hosts to 
+access each other:
+
++-----------------------+---------+---------+---------+
 |                       | host 1  | host 2  | host 3  |
-| --------------------- | ------- | ------- | ------- |
++-----------------------+---------+---------+---------+
 | host 1 (MAC address1) | NA      | token22 | token31 |
++-----------------------+---------+---------+---------+
 | host 2 (MAC address2) | token13 | NA      | token33 |
++-----------------------+---------+---------+---------+
 | host 3 (MAC address3) | token12 | token23 | NA      |
++-----------------------+---------+---------+---------+
 
+For example: 
+- 1) Host 1 connects to host 2 using token22, that is, for host 2, host 1 has a security level of 2; 
+- 2) when host 1 connects to host 3, token31 is used, that is, for host 3, The security level of host 1 is level 1. 
+
+And so on. For hosts that are not in the table, the host server will not reject the connection for the sake of 
+openness, but will not issue a token for it. For hosts that do not have a token, the security level is considered 
+to be -1 and there is no level.
 
 Service access authentication
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Just as the host server is responsible for host authentication, the ``name server`` is responsible for the 
+authentication of the service access, and also uses the authentication authentication + token issuing method. 
+When the server registers the service name with the ``name server``, the ``name server`` allocates multiple 
+tokens at the same time as the address is assigned, and each token corresponds to a security level, as shown 
+in the following table:
 
++----------+------------------+------------------+------------------+------------------+
 |          | Security Level 0 | Security Level 1 | Security Level 2 | Security Level 3 |
-| -------- | ---------------- | ---------------- | ---------------- | ---------------- |
++----------+------------------+------------------+------------------+------------------+
 | server 1 | token10          | token11          | token12          | token13          |
++----------+------------------+------------------+------------------+------------------+
 | server 2 | token20          | token21          | token22          | token23          |
++----------+------------------+------------------+------------------+------------------+
 | server 3 | token30          | token31          | token32          | token33          |
++----------+------------------+------------------+------------------+------------------+
 
+There are four security levels in the table. For server1, the tokens corresponding to each security level 
+are token10, token11, token12, and token13. For other servers, and so on. When the client connects to server1, 
+it needs to hold one of the four tokens of server1. For example, if the client uses token11 to connect to 
+server1, then in the eyes of server1, the client's security level is 1. If you use token13, then the client's 
+security level is 3, and so on. The number of security levels can be configured as appropriate.
 
+The security level of the client is specified after the ``name server`` authenticates and authenticates the 
+client. When the client connects to the ``name server`` through the UDS, the UDS will also generate the 
+client's credentials to the ``name server``, including the client's uid and guid. Service access authentication 
+is not supported because Windows does not support ``UDS``. For ``QNX``, although ``UDS`` is supported, service 
+access authentication is not supported because the ``SO_PEERCRED`` option is not supported. So currently only Linux 
+can support, and the credentials are attached by the operating system, trustworthy, the client can not fake an 
+identity. According to uid and guid, the ``name server`` can identify the identity of the client, and publish 
+the token used to access other servers through the following configuration table:
+
++----------------------+---------+---------+---------+---------+
 |                      | server1 | server2 | server3 | server4 |
-| -------------------- | ------- | ------- | ------- | ------- |
++----------------------+---------+---------+---------+---------+
 | client1 (uid1:guid1) | token12 | token22 | token31 | token43 |
++----------------------+---------+---------+---------+---------+
 | client2 (uid2:guid2) | token13 | token21 | token33 | token43 |
++----------------------+---------+---------+---------+---------+
 | client3 (uid3:guid3) | token12 | token23 | token33 | token41 |
++----------------------+---------+---------+---------+---------+
 
+For example: 
+- 1) client1 uses server12 with server1, that is, for server1, client1 has a security level of 2; 
+- 2) client1 uses server2 for server2, that is, for server2, client1 has a security level of 2 . 
+And so on. For clients that are not in the table, for reasons of openness, the ``name server`` will not reject, 
+but will not issue tokens for it. For clients without a token, the security level is considered to be -1, 
+the lowest level.
+
+When the security policy is enabled, the process of establishing a connection between the client and the 
+server increases the client authentication and token issuance process, as shown in the following figure:
+
+.. image:: ./images/5.png
+  :width: 600px
+
+Compared with the previous timing, in the above figure, the ``name server`` issues tokens to the server 
+and the client respectively: all the security level tokens T0-T3 are issued to the server; only the token 
+matching the security level is issued to the client. When the client connects to the server, it will also 
+send the token to the server. The server finds that the received token is consistent with T1 by comparison, 
+so that the client's security level is 1. Suppose a malicious client also connects to the same server: 
+Since the ``name server`` does not recognize its ``UID``, it will not be assigned a token. When the client 
+connects to the server, the server sets its security level to -1, that is, no security level, because the 
+token cannot be given. In this case, by configuring serve, you can only allow access to a limited API to 
+achieve access control.
 
 Security level and access rights
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+When determining the security level of the client, the server needs to integrate the security level of 
+the client itself and the security level of the host where the client is located: the highest security 
+level of the client does not exceed the security level of the host where it resides. With a security 
+level, the server can define different levels of access: at which levels, which methods can be called, 
+and which messages are broadcast. The following figure shows the partitioning of a server's access rights:
+
+.. image:: ./images/6.png
+  :width: 600px
+
+Each server can define access rights corresponding to different security levels through the configuration 
+file. The specific method is to segment the method ID and the notification ID, and the IDs falling in 
+different segments correspond to different security levels. For the method call, if the security level 
+of the client does not reach the required level, the server will refuse to execute; for the message 
+notification, if the client does not have the permission, the message of the high security level cannot 
+be registered, and thus the change notification of the message is not received.
+
 Security policy configuration file
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The security policy file is located under ``/etc/fdbus`` by default.
 
 Parameter configuration file /etc/fdbus/fdbus.fdb
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+This file configures the overall security parameters, including the following fields:
+
+- *Number_of_secure_levels*: number type, how many security levels are configured
+- *Token_length*: number type, configured for the length of the token in bytes.
+
 Host configuration file /etc/fdbus/host.fdb
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This file configures the security parameters of each host, including the following fields:
+
+- *host*: object type, the key of each element is the host name ("host_name"), and the value is the array type, which contains the security policy of the corresponding host.
+- *host."host_name"[...]*: object type, which indicates the configuration of a security level.
+- *host."host_name"[...].level*: number type, indicating the security level
+- *host."host_name"[...].ip*: array type, each element is the host ID represented by the IP address, meaning: the host with these IP addresses, the security level is host."host_name"[.. .].level. If the IP is a "default" string, it means that there is no default security level for the host in the configuration file.
+- *host."host_name"[...].mac*: array type, each element is the host ID represented by the MAC address, meaning the same as host."host_name"[...].ip.
 
 Server Configuration file /etc/fdbus/server/server_name.fdb
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+The Server configuration file is located in the ``/etc/fdbus/server`` directory. Each server has a 
+configuration file. The file name specification is: ``server_name+.fdb suffix``, which contains the 
+following fields:
+
+- *method*: The array type, the security policy that the configuration method calls.
+- *method[...]*: The object type defines the security policy for a collection of methods.
+- *method[...]*.level:number type, indicating the security level
+- *method[...]*.from:number type, which represents the minimum value of the method set. If it 
+  is a "default" string, it means that there is no default security level for the method of 
+  configuring the security level.
+- *method[...]*.to:number type, which represents the maximum value of the method set. The 
+  overall meaning is: If a method ID is greater than or equal to method[...].from, less than 
+  or equal to method[...].to, its security level is method[...].level. Only clients with a 
+  security level greater than or equal to this level can call methods in this range.
+- *event*: The array type is similar to the method except that it is configured with a 
+  security policy for broadcast monitoring. Only clients that meet the security level have 
+  the right to listen to the corresponding event.
+- *permission*: array type, configure the access permissions of the server.
+- *permission[...]*: object type, which defines the configuration of a security level.
+- *permission[...]*.level:number type, indicating the security level.
+- *permission[...]*.gid:array type, if each element is of type string, it means group name, 
+  if it is number type, it means group id. The meaning of the security policy is: If a client 
+    is in a certain group specified by the array, its security level is permission[...].level. 
+    If the field is a "default" string, it means that the client's default security level cannot 
+    be found for the security policy.
+- *permission[...]*.uid:array type, if each element is of type string, it means user name, if it 
+  is number type, it means user id. The meaning of the security policy is: If the client id of 
+  a client is contained in an array, its security level is permission[...].level.
+
+
 Debugging and logging
 ---------------------
+
+The ``DBus`` monitor from DBus is impressive: it can crawl all the messages on the ``DBus`` bus, 
+and it can set filters to crawl specific messages. The captured messages are very readable, 
+and various data structures and field names can be displayed. Similarly, ``FDBus`` also provides a 
+tool for crawling messages - log server, and its function is stronger. In addition to ``FDBus`` 
+messages, it also supports debugging log output, and combines FDBus messages and debug logs to 
+facilitate timing analysis.
+
+The log server is a normal server that is hung on the ``FDBus``. Each endpoint contains its client, 
+as shown in the following figure:
+
+.. image:: ./images/7.png
+  :width: 600px
+
+Like the normal server, the log server runs up and registers with the name server, which broadcasts 
+the LogClient in each endpoint. Later, when the endpoint sends an FDBus message, it will also copy 
+one copy to the log server through LogClient. In addition to the FDBus message content, the sent 
+data also includes:
+
+- Timestamp
+- Transmitter and receiver names
+- Message type (request, reply, broadcast, subscription, etc.)
+
+The protocol buffer is transmitted in binary format on the line and cannot be printed directly. 
+For debugging convenience, the protocol buffer can convert the message into a text format that 
+is easy to read, visually display the name and value of each member in the message, and expand 
+the array type (repeated type) and nested type.
+
+For debug log output, ``FDBus`` has its own API and supports the following output levels 
+(priority increments):
+
+- Debug
+- Information
+- Warning
+- Error
+- Fatal
+
+As long as the log server is started, when the endpoint prints the debug log through the API, 
+these logs are sent to the log server through LogClient. The log server can combine the debug 
+log and the ``FDBus`` message to output, or you can choose to output specific content separately.
+
+Regardless of which host the endpoint is deployed on, the log server can collect its ``FDBus`` 
+messages and debug logs. The entire system can only run one log server, which is not convenient 
+for distributed debugging. To this end, ``FDBus`` has another tool - log viewer, multiple log viewers 
+can be started at the same time, all connected to the log server, get the current log information, 
+and print on the standard output.
 
 FDBus internal structure
 ------------------------
 
+The following figure is a block diagram of the internal components of ``FDBus``:
+
+.. image:: ./images/8.png
+  :width: 600px
+
+- *Base platform abstraction layer* - contains system-independent abstractions for adapting to different operating systems
+- *Advanced platform abstraction layer* - a middleware process model that contains the basic components that make up a process
+- *IPC layer* - interprocess communication model, including the basic components for implementing IPC communication
+- *Server layer* - provides service name resolution, networking, logging and debugging services
+
 Conclusion
 ----------
 
+``FDBus`` provides a distributed ``IPC`` communication mechanism to support client-server communication 
+across hosts, using service names instead of physical addresses as addressing modes, ensuring connectivity 
+dynamics and reliability through various services and heartbeat reconnection mechanisms, thereby ensuring 
+the system The nodes inside can be dynamically added and deleted, dynamically deployed, and arbitrarily 
+restarted without managing the startup sequence and dependencies, thereby binding the separate modules 
+together to form a solid whole. As an important part of ``IPC``, protocol buffer supports a variety of complex 
+data types, can define interfaces with idl and support automatic code generation, greatly reducing 
+serialization and deserialization. FDBus supports security policies, differentiates security levels from 
+access, and ensures the security of the entire system.
 
+``FDBus`` is not only an ``IPC`` mechanism, but also a middleware development framework, which contains common 
+components and basic models that are often used in the development of middleware, providing cross-platform 
+and powerful support for middleware development.
 
+After the source code is open, ``FDBus`` expects more developers to use, test and improve, and become one 
+of the options for many middleware development frameworks.
 
 
