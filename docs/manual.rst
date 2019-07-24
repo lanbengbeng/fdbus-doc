@@ -54,10 +54,10 @@ with lower real-time requirements and smaller data volume, otherwise it will hav
 ``IPC`` framework. For this reason, someone wrote ``D-Bus`` into the kernel and generated ``KDBus``. 
 Although the performance is improved, the disadvantages are obvious. It can only be run on a single machine 
 and does not support cross-host. In this case, Android's Binder is also sufficient, and Binder has been 
-accepted by the kernel. ``KDBus`` has not yet `"turned positive"`. In addition, whether it is DBus or 
+accepted by the kernel. ``KDBus`` has not yet `"turned positive"`. In addition, whether it is ``DBus`` or 
 ``KDBus``, the provision of the basic API, there is still a big gap from the "middleware development framework." 
 However, there is an increasing demand for various industries, including the automotive industry, so that 
-various DBus packages are produced: Qt DBus, gDBus, commonAPI, ``DBus-C++``... But these packages are either 
+various ``DBus`` packages are produced: ``Qt DBus``, ``gDBus``, commonAPI, ``DBus-C++``... But these packages are either 
 subordinate to the big frame. Or lack of maintenance, in short, it is not friendly to use.
 
 
@@ -413,10 +413,9 @@ access each other:
 | host 3 (MAC address3) | token12 | token23 | NA      |
 +-----------------------+---------+---------+---------+
 
-For example: 
-- 1) Host 1 connects to host 2 using token22, that is, for host 2, host 1 has a security level of 2; 
-- 2) when host 1 connects to host 3, token31 is used, that is, for host 3, The security level of host 1 is level 1. 
-
+For example:
+| 1) Host 1 connects to host 2 using token22, that is, for host 2, host 1 has a security level of 2;
+| 2) when host 1 connects to host 3, token31 is used, that is, for host 3, The security level of host 1 is level 1.
 And so on. For hosts that are not in the table, the host server will not reject the connection for the sake of 
 openness, but will not issue a token for it. For hosts that do not have a token, the security level is considered 
 to be -1 and there is no level.
@@ -465,9 +464,9 @@ the token used to access other servers through the following configuration table
 | client3 (uid3:guid3) | token12 | token23 | token33 | token41 |
 +----------------------+---------+---------+---------+---------+
 
-For example: 
-- 1) client1 uses server12 with server1, that is, for server1, client1 has a security level of 2; 
-- 2) client1 uses server2 for server2, that is, for server2, client1 has a security level of 2 . 
+For example:
+| 1) client1 uses server12 with server1, that is, for server1, client1 has a security level of 2; 
+| 2) client1 uses server2 for server2, that is, for server2, client1 has a security level of 2 .
 And so on. For clients that are not in the table, for reasons of openness, the ``name server`` will not reject, 
 but will not issue tokens for it. For clients without a token, the security level is considered to be -1, 
 the lowest level.
