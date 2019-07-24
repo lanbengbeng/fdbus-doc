@@ -87,20 +87,20 @@ that you have to pay for closed source software.
 - Service name resolution: The server address is identified by name, the service is registered by 
   the ``name server``, and the name is resolved, so that the server can be deployed anywhere on the network.
 - Support cross-platform middleware development framework, including the following components:
- * Thread model
- * Event Loop
- * Job-to-thread communication based on Job-Worker
- * Event Loop based Timer
- * Event Loop based watch
- * Mutex
- * Semaphore
- * Socket
- * Notification
+  * Thread model
+  * Event Loop
+  * Job-to-thread communication based on Job-Worker
+  * Event Loop based Timer
+  * Event Loop based watch
+  * Mutex
+  * Semaphore
+  * Socket
+  * Notification
 - ``IPC`` adopts Client-Server mode and supports the following communication modes:
- * Sync request with timeout - reply
- * Asynchronous request with timeout - reply
- * Unanswered command request
- * Registration-release mode for multicast
+  * Sync request with timeout - reply
+  * Asynchronous request with timeout - reply
+  * Unanswered command request
+  * Registration-release mode for multicast
 - ``IPC`` message serialization and deserialization using Protocol buffer, support IDL code generation, 
   efficient and simple; also supports raw data format, convenient for large data transmission
 - Reliable heartbeat and reconnection mechanisms ensure that all parties remain connected regardless 
