@@ -358,9 +358,9 @@ its own security capabilities. For ``FDBus``, there are two prerequisites:
 
 Based on these assumptions, the attacks faced by ``FDBus`` mainly come from three aspects:
 
-- 1) The illegal host connects to the ``FDBus`` bus and runs an illegal client to access the server on other hosts; 
-- 2) Runs an illegal client on a legitimate host to access the ``FDBus`` server in the host
-- 3) A legitimate client is running a legitimate client, but tries to get data without permission or 
+| 1) The illegal host connects to the ``FDBus`` bus and runs an illegal client to access the server on other hosts; 
+| 2) Runs an illegal client on a legitimate host to access the ``FDBus`` server in the host
+| 3) A legitimate client is running a legitimate client, but tries to get data without permission or 
   perform an operation without permission.
 
 Based on the above attacks, ``FDBus`` ensures the safe operation of the system from the following aspects:
