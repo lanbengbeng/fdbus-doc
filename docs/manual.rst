@@ -7,12 +7,13 @@ Abstract
 This manual describes a new type of ``IPC`` mechanism: Fast Distributed Bus (``FDBus``). 
 From the perspective of ``IPC`` (Inter-Process Communication), ``FDBus`` has similarities 
 with widely used ``D-Bus`` (Desktop Bus), but ``FDBus`` has its own advantages, more complete 
-functions, higher performance and convenient use, in addition to supporting ``IPC`` in the host. 
-It can also be networked between multiple hosts, and can customize security policies to support 
+functions, higher performance and convenient use. It can also be networked between multiple hosts 
+in addition to supporting ``IPC`` in the host. And can customize security policies to support 
 different security levels. ``FDBus`` is built on sockets (``Unix`` domain and ``TCP``) and 
 serialized and deserialized using Google protobuf. ``FDBus`` supports the name of a string as 
 the server address. The ``name server`` automatically assigns a ``Unix`` domain address and a 
-``TCP`` port number to the server, so that the service name is used between the client and the server.
+``TCP`` port number to the server, so that the addressing between the client and the server 
+through the service name can be achieved .
 
 ``FDBus`` aims to provide a connection-oriented, scalable, secure and reliable ``IPC`` mechanism 
 between client-servers, and then develop into a middleware development framework for cross-platform 
@@ -87,20 +88,20 @@ that you have to pay for closed source software.
 - Service name resolution: The server address is identified by name, the service is registered by 
   the ``name server``, and the name is resolved, so that the server can be deployed anywhere on the network.
 - Support cross-platform middleware development framework, including the following components:
-  * Thread model
-  * Event Loop
-  * Job-to-thread communication based on Job-Worker
-  * Event Loop based Timer
-  * Event Loop based watch
-  * Mutex
-  * Semaphore
-  * Socket
-  * Notification
+ * Thread model
+ * Event Loop
+ * Job-to-thread communication based on Job-Worker
+ * Event Loop based Timer
+ * Event Loop based watch
+ * Mutex
+ * Semaphore
+ * Socket
+ * Notification
 - ``IPC`` adopts Client-Server mode and supports the following communication modes:
-  * Sync request with timeout - reply
-  * Asynchronous request with timeout - reply
-  * Unanswered command request
-  * Registration-release mode for multicast
+ * Sync request with timeout - reply
+ * Asynchronous request with timeout - reply
+ * Unanswered command request
+ * Registration-release mode for multicast
 - ``IPC`` message serialization and deserialization using Protocol buffer, support IDL code generation, 
   efficient and simple; also supports raw data format, convenient for large data transmission
 - Reliable heartbeat and reconnection mechanisms ensure that all parties remain connected regardless 
@@ -562,9 +563,9 @@ following fields:
 - *permission[...]*.level:number type, indicating the security level.
 - *permission[...]*.gid:array type, if each element is of type string, it means group name, 
   if it is number type, it means group id. The meaning of the security policy is: If a client 
-    is in a certain group specified by the array, its security level is permission[...].level. 
-    If the field is a "default" string, it means that the client's default security level cannot 
-    be found for the security policy.
+  is in a certain group specified by the array, its security level is permission[...].level. 
+  If the field is a "default" string, it means that the client's default security level cannot 
+  be found for the security policy.
 - *permission[...]*.uid:array type, if each element is of type string, it means user name, if it 
   is number type, it means user id. The meaning of the security policy is: If the client id of 
   a client is contained in an array, its security level is permission[...].level.
