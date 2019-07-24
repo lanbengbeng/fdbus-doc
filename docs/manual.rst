@@ -356,15 +356,18 @@ its own security capabilities. For ``FDBus``, there are two prerequisites:
   packet and obtain the data transmitted by the ``FDBus`` on the link. Key data such as tokens will be 
   encrypted in the future, but it has not been implemented yet.
 
-Based on these assumptions, the attacks faced by FDBus mainly come from three aspects: 
-- 1) The illegal host connects to the FDBus bus and runs an illegal client to access the server on other hosts; 
-- 2) Runs an illegal client on a legitimate host to access the FDBus server in the host
+Based on these assumptions, the attacks faced by ``FDBus`` mainly come from three aspects:
+
+- 1) The illegal host connects to the ``FDBus`` bus and runs an illegal client to access the server on other hosts; 
+- 2) Runs an illegal client on a legitimate host to access the ``FDBus`` server in the host
 - 3) A legitimate client is running a legitimate client, but tries to get data without permission or 
-  perform an operation without permission. 
-Based on the above attacks, FDBus ensures the safe operation of the system from the following aspects:
-- **Authentication of the host node**: All hosts joining the FDBus are divided into different security levels.
+  perform an operation without permission.
+
+Based on the above attacks, ``FDBus`` ensures the safe operation of the system from the following aspects:
+
+- **Authentication of the host node**: All hosts joining the ``FDBus`` are divided into different security levels.
 - **Authentication of service access**: all clients are divided into different security levels
-- **Access restrictions**: The server's method calls and event broadcasts are divided into security levels, 
+- **Access restrictions**: The server's method calls and event broadcasts are divided into security levels,
   and the talent can call the method that matches the server security level and the event broadcast that 
   matches the registration.
 
@@ -414,8 +417,10 @@ access each other:
 +-----------------------+---------+---------+---------+
 
 For example:
+
 | 1) Host 1 connects to host 2 using token22, that is, for host 2, host 1 has a security level of 2;
 | 2) when host 1 connects to host 3, token31 is used, that is, for host 3, The security level of host 1 is level 1.
+
 And so on. For hosts that are not in the table, the host server will not reject the connection for the sake of 
 openness, but will not issue a token for it. For hosts that do not have a token, the security level is considered 
 to be -1 and there is no level.
@@ -465,8 +470,10 @@ the token used to access other servers through the following configuration table
 +----------------------+---------+---------+---------+---------+
 
 For example:
+
 | 1) client1 uses server12 with server1, that is, for server1, client1 has a security level of 2; 
 | 2) client1 uses server2 for server2, that is, for server2, client1 has a security level of 2 .
+
 And so on. For clients that are not in the table, for reasons of openness, the ``name server`` will not reject, 
 but will not issue tokens for it. For clients without a token, the security level is considered to be -1, 
 the lowest level.
