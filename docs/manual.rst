@@ -18,10 +18,10 @@ through the service name can be achieved .
 ``FDBus`` aims to provide a connection-oriented, scalable, secure and reliable ``IPC`` mechanism 
 between client-servers, and then develop into a middleware development framework for cross-platform 
 (``Windows``, ``QNX``, ``Linux``), multi-threaded/multi-process middleware layers which working together. 
-The ``FDBus`` development framework is suitable for developing interactive and complex distributed 
-projects on custom systems, including:
+The ``FDBus`` development framework is suitable for interactive and complex distributed projects 
+developed on customization systems, including:
 
-- Linux-based vehicle ``ECU``, including instrumentation, entertainment host, TBox, 
+- Linux-based vehicle ``ECU``, including instrument cluster, entertainment host, TBox, 
   domain controller connected via Ethernet
 - Communication between multiple Guest OSs on ``Hypervisors``
 - Provide cross-host ``IPC`` mechanism for Android system (currently does not support ``Java API``)
@@ -29,81 +29,81 @@ projects on custom systems, including:
 - Other Linux-based industrial equipment, smart equipment
 - Automated test equipment based on ``Windows`` development
 
-You may get the open source code of ``FDBus`` on Github:
+You may get the open source of ``FDBus`` with Apache License on Github:
   https://github.com/jeremyczhen/fdbus.git
 
 
 Background
 ----------
 
-Unlike other cores, ``Linux`` has not had its own unique and easy-to-use ``IPC`` mechanism. 
-``Windows``, ``Mac OS``, and ``QNX`` all have such a mechanism. Even Linux-based ``Android`` 
+Unlike other cores, ``Linux`` has not had its own unique and easy-to-use ``IPC`` mechanism, 
+while``Windows``, ``Mac OS``, and ``QNX`` all have such a mechanism. Even Linux-based ``Android`` 
 has developed a binder for ``IPC``. The ``Linux kernel`` only provides some of the most basic 
 components - socket, pipe, message queue, shared memory, and so on. This is also in line with 
-the ``Linux`` philosophy: each tool only does one thing and does it well. But the reality is 
-often very complicated, and only one thing can't solve the problems encountered in reality, 
-let alone product development and large commercial projects. For example, subscription-broadcasting 
-is a basic communication requirement, but no basic component can satisfy it.
+the ``Linux`` philosophy which is that each tool only does one thing and does it well. But the 
+reality is often very complicated. Just doing one thing is far from solving the problems encountered 
+in reality, let alone product development and large commercial projects. For example, 
+subscription-broadcasting is a basic communication requirement, but no basic component can satisfy it.
 
 
 Actually ``Linux`` has a powerful ``IPC``: ``D-Bus``. It has sophisticated method invocation mechanisms 
-and event broadcast mechanisms; it also includes advanced features such as security policies and 
-on-demand startup of services. But the biggest controversy about it is performance: its performance is 
+and event broadcast mechanisms. It also includes advanced features such as security policies and 
+on-demand startup of services. But the biggest controversy about it is the performance: its performance is 
 very low, due to the daemon relay, a request-reply needs to replicate ten times, four message verification, 
 and four context switches. Therefore, it can only be used to handle control commands and message delivery 
 with lower real-time requirements and smaller data volume, otherwise it will have to resort to the basic 
 ``IPC`` framework. For this reason, someone wrote ``D-Bus`` into the kernel and generated ``KDBus``. 
 Although the performance is improved, the disadvantages are obvious. It can only be run on a single machine 
 and does not support cross-host. In this case, Android's Binder is also sufficient, and Binder has been 
-accepted by the kernel. ``KDBus`` has not yet `"turned positive"`. In addition, whether it is ``DBus`` or 
-``KDBus``, the provision of the basic API, there is still a big gap from the "middleware development framework." 
-However, there is an increasing demand for various industries, including the automotive industry, so that 
-various ``DBus`` packages are produced: ``Qt DBus``, ``gDBus``, commonAPI, ``DBus-C++``... But these packages are either 
-subordinate to the big frame. Or lack of maintenance, in short, it is not friendly to use.
+accepted by the kernel. ``KDBus`` has not `"turned positive"` yet. In addition, whether it is ``DBus`` or 
+``KDBus``, the provision is still the basic API, and there is still a big gap from the "middleware development 
+framework." However, there is an increasing demand from various industries, including the automotive industry, 
+so that various ``DBus`` packages are produced: ``Qt DBus``, ``gDBus``, commonAPI, ``DBus-C++``... But these 
+packages are either subordinate to the big frame or lack of maintenance, in short, it is not friendly to use.
 
 
 In the automotive field where ``Linux`` and ``Ethernet`` are used more and more widely, the lack of suitable 
 ``IPC`` has gradually become a prominent problem: the company's original ``IPC`` mechanism is backward due to 
 backward technology and obvious customization, and it has been unable to meet the requirements of distributed, 
 high performance and security. However, it is unable to find a suitable ``IPC`` mechanism for the new platform, 
-let alone a middleware development framework derived from the ``IPC`` mechanism. ``Ethernet`` in-vehicle applications 
-have spawned ``SOME/IP`` (Scalable service-Oriented MiddlewarE over IP). SOME/IP is also a relatively complete 
-``IPC`` specification, even developed specifically for the automotive industry. But as the name implies, it is 
-based on the IP layer and does not perform well on a single machine. And ``SOME / IP`` open source implementation 
-is also very few, GENIVI organization contributed vsomeip, but the activity is very low, ``GENIVI`` itself is a 
-loose organization, more participants, fewer developers. Unlike ``DBus``, ``SOME/IP`` is built for the car and has 
+let alone a middleware development framework derived from the ``IPC`` mechanism. The application of ``Ethernet`` in 
+vehicle have spawned ``SOME/IP`` (Scalable service-Oriented MiddlewarE over IP). ``SOME/IP`` is also a relatively 
+complete ``IPC`` specification, even developed specifically for the automotive industry. But as the name implies, it is 
+based on the IP layer and does not perform well on a single machine. And the open sources for ``SOME / IP`` implementation 
+are also very few. The GENIVI organization contributed vsomeip, but the activity is very low. ``GENIVI`` itself is a 
+loose organization with more participants but fewer developers. Unlike ``DBus``, ``SOME/IP`` is built for vehicle and has 
 a narrow range of applications. It is impossible to expect an active community to gather a group of professional 
-programmers to maintain open source (this is probably why ``GENIVI`` is not a climate). Finally, it is very likely 
+programmers to maintain open source (this is probably why ``GENIVI`` is unsuccessful). Finally, it is very likely 
 that you have to pay for closed source software.
 
 
 ``FDBus`` was developed to solve the above problems and has the following characteristics:
 
-- Distributed: Based on TCP sockets and Unix Domain sockets (``UDS``), it can be used for both local 
+- :command:`Distributed`: Based on ``TCP`` sockets and Unix Domain sockets (``UDS``), it can be used for both local 
   ``IPC`` and ``IPC`` between network hosts.
-- Cross-platform: Currently verified on ``Windows``, ``Linux`` and ``QNX``
-- High performance: point-to-point direct communication, not forwarded through a central hub or broker
-- Security: Ability to configure different levels of access for server method calls and event broadcasts. 
+- :command:`Cross-platform`: Currently verified on ``Windows``, ``Linux`` and ``QNX``
+- :command:`High performance`: point-to-point direct communication, not forwarded through a central hub or broker
+- :command:`Security`: Ability to configure different levels of access for server method calls and event broadcasts. 
   Only clients with high enough permissions can characterize methods and receive specific events.
-- Service name resolution: The server address is identified by name, the service is registered by 
+- :command:`Service name resolution`: The server address is identified by name, the service is registered by 
   the ``name server``, and the name is resolved, so that the server can be deployed anywhere on the network.
 - Support cross-platform middleware development framework, including the following components:
- * Thread model
- * Event Loop
- * Job-to-thread communication based on Job-Worker
- * Event Loop based Timer
- * Event Loop based watch
- * Mutex
- * Semaphore
- * Socket
- * Notification
+    * 1. Thread model
+    * 2. Event Loop
+    * 3. Inter-thread communication based on Job-Worker
+    * 4. Timer based on Event Loop
+    * 5. Watch based on Event Loop
+    * 6. Mutex
+    * 7. Semaphore
+    * 8. Socket
+    * 9. Notification
 - ``IPC`` adopts Client-Server mode and supports the following communication modes:
- * Sync request with timeout - reply
- * Asynchronous request with timeout - reply
- * Unanswered command request
- * Registration-release mode for multicast
-- ``IPC`` message serialization and deserialization using Protocol buffer, support IDL code generation, 
-  efficient and simple; also supports raw data format, convenient for large data transmission
+    * 1. Synchronous request - reply with timeout
+    * 2. Asynchronous request - reply with timeout
+    * 3. Unanswered command request
+    * 4. Registration-release mode for multicast
+- ``IPC`` message realizes serialization and deserialization by Protocol buffer. It supports IDL code generation 
+  which is efficient and simple. It also supports raw data format and is convenient for large data transmission
 - Reliable heartbeat and reconnection mechanisms ensure that all parties remain connected regardless 
   of network conditions, regardless of which service is back online or restarted
 - C++ implementation, easy to develop and maintain
@@ -122,14 +122,14 @@ Mainstream IPC framework comparison
 |      |        || Binder         |         |              |           || connection        || matching|          |            |
 +------+--------+-----------------+---------+--------------+-----------+--------------------+----------+----------+------------+
 |GDBus | Socket || Turned by      |    YES  |      YES     |    YES    || YES               || YES     || Window  || YES       |
-|      |        || daemon,        |         |              |           || but needed        || with    || Linux   || Developing|
+|      |        || daemon,        |         |              |           || but need          || with    || Linux   || Developing|
 |      |        || lower          |         |              |           || maintaining       || complex || QNX     |            |
 |      |        || performance    |         |              |           || reconnection when || matching|          |            |
 |      |        |                 |         |              |           || network fails     ||         |          |            |
 +------+--------+-----------------+---------+--------------+-----------+--------------------+----------+----------+------------+
 |Binder|| Binder|| Direct copy,   |   YES   || YES         || YES      |         NO         || YES     || Only    | YES        |
-|      || driver|| highest        |         || but need to || but need |                    || but need|| Linux,  |            |
-|      |        || performance,   |         || use a       || to       |                    || to use a|| requires|            |
+|      || driver|| highest        |         ||             || but need |                    ||         || Linux,  |            |
+|      |        || performance,   |         || but need    || to       |                    || but need|| requires|            |
 |      |        ||                |         || callback    || increase |                    || callback|| kernel  |            |
 |      |        |                 |         || package     |           |                    || package || driver  |            |
 +------+--------+-----------------+---------+--------------+-----------+--------------------+----------+----------+------------+
@@ -145,36 +145,36 @@ The following figure is an example of a middleware layer based on ``FDBus`` deve
 The middleware layer contains multiple processes, whether they are on the same host system or 
 on different host systems. Each process can run multiple threads. ``FDBus`` runs a specific event 
 loop on a thread basis, enhancing the generic thread to a worker thread capable of executing jobs, 
-timers, and watches. The communication side of ``FDBus``: client and server are collectively called 
-endpoint. Endpoints can be deployed on different workers; multiple endpoints can also share the 
-same worker. "Endpoint deployed on the worker" means that the event processing of the endpoint 
+timers, and watches. The two communication parties (client and server) of ``FDBus`` are collectively 
+referred to as endpoint. Endpoints can be deployed on different workers; multiple endpoints can also 
+share the same worker. "Endpoint deployed on the worker" means that the event processing of the endpoint 
 is executed on the worker. For example, the server processes the client request on the specified 
 worker; the client processes the asynchronous reply and the broadcast event of the server on the 
 specified worker. Middleware developers can use a worker to handle multiple endpoint events 
-according to the actual situation, avoiding consuming too many threads, and avoiding the 
-"concurrency disaster" caused by multithreading. Developers can also use multiple workers for 
-an endpoint service. For example, endpoint can create worker threads to complete time-consuming 
-file downloads, video codecs, peripheral IO operations.
+according to the actual situation, avoiding consuming too many threads, and also avoiding the 
+"concurrency disaster" caused by multithreading. Developers can also use multiple workers to serve 
+one endpoint. For example, endpoint can create worker threads to complete time-consuming 
+file downloads, video codecs, peripheral IO operations, etc..
 
 
-Multi-threaded collaborative work requires that messages and data be passed between threads. 
-For example, if the file is downloaded, the endpoint should be notified for subsequent processing. 
-In the process, because the same address space can be accessed, the best communication carrier is 
-the object - both data can be carried and the data can be processed. Job is the object that 
-``FDBus`` transfers between threads, and realizes inter-process communication through the transfer 
+Multi-threaded collaborative work requires that messages and data could be transferred between threads. 
+For example, the endpoint should be notified for subsequent processing if the file is downloaded successfully. 
+Because the same address space can be accessed in the process, the best communication carrier is 
+the object which can either carry the data or specify the way of data processing. Job is the object that 
+``FDBus`` transfers between threads, ``FDBus`` realizes inter-process communication through the transfer 
 and execution of jobs between threads.
 
 A more important feature of ``FDBus`` is interprocess communication (``IPC``). Objects cannot be 
-directly passed between processes, can only interact in the form of messages, and need to be 
-serialized during message transmission. After receiving the message, deserialization is required. 
-Each ``IPC`` mechanism, including ``Binder``, ``SOME/IP``, and ``DBus``, has its own serialization 
-method. The quality of serialization directly affects communication efficiency, load, support for 
-data structures, and ease of use. ``FDBus`` does not have its own serialization method, directly uses 
-google protocol buffer, easy to use, full-featured, and supports idl automatic code generation. 
+directly passed between processes. Processes can only interact in the form of messages. Further more, 
+messages need to be serialized during transmission and deserialized after receiving. Each ``IPC`` 
+mechanism, including ``Binder``, ``SOME/IP``, and ``DBus``, has its own serialization method. 
+The quality of serialization directly affects communication efficiency, load, support for data 
+structures, and ease of use. ``FDBus`` does not have its own serialization method, just uses google 
+protocol buffer directly which is easy to use, full-featured, and supports idl automatic code generation. 
 Data is communicated between processes using sockets, including Unix Domain Sockets (``UDS``) and 
-``TCP`` sockets. Which type is used, the system will automatically choose according to the deployment 
-of Client and Server: if ``UDS`` is used inside the same host, otherwise ``TCP`` socket is used. 
-For ``Windows``, since ``UDS`` is not supported, all ``TCP`` sockets are used.
+``TCP`` sockets. The system will automatically choose which type to be used according to the deployment 
+of Client and Server: ``UDS`` is used if inside the same host, otherwise ``TCP`` socket is used. 
+For ``Windows``, since ``UDS`` is not supported, ``TCP`` sockets are used for all.
 
 FDBus addressing and networking
 -------------------------------
@@ -184,8 +184,8 @@ Server address
 
 The server address is the identifier of the server in the network. Through this identifier, 
 the client can find the specified server and establish communication with it. As mentioned 
-earlier, FDBus supports ``UDS`` and TCP sockets, each with its own naming and namespace. To unify 
-``FDBus``, use the following rules to define the server address:
+earlier, FDBus supports ``UDS`` and ``TCP`` sockets, each with its own naming method and namespace. 
+For unification, ``FDBus`` uses the following rules to define the server address:
 
 - ``UDS``: file://socket filename
 - ``TCP`` socket: tcp://ip address: port number
@@ -193,56 +193,55 @@ earlier, FDBus supports ``UDS`` and TCP sockets, each with its own naming and na
 Different from the socket server in the general sense, the ``FDBus`` server can bind multiple addresses 
 at the same time, and each address can accept the connection of the client. Once connected, each address 
 provides the same service, so the client can choose any address to establish a connection. The following 
-is a schematic diagram of the ``FDBus`` server address binding:
+figure is a schematic diagram of the ``FDBus`` server address binding:
 
 .. image:: ./images/2.png
   :width: 600px
 
 In the figure above, the server is bound to a ``UDS`` address: ``file:///tmp/fdb-ipc1``. The client on the 
-same host can use this address to initiate a connection, of course, can also connect to any other address, 
-but undoubtedly the most efficient use of ``UDS``, and ``UDS`` support peer credentials, and thus support 
-security policies. Because the host has multiple network ports, the server can also bind one address 
+same host can use this address to initiate a connection. Of course, it can also connect to any other address, 
+but undoubtedly the most efficient one is ``UDS``. And ``UDS`` supports peer credentials, and thus support 
+security policies. As the host has multiple network ports, the server can also bind one address 
 (port number) to each network port: ``tcp://192.168.1.2:60004`` and ``tcp://192.168.0.1:60004``. Each address 
 is used to connect to the client of the corresponding network segment.
 
 Server naming and address assignment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-It is inconvenient to use the above address to locate the server. It is not intuitive. The address will 
-change with the networking mode and cannot be deployed flexibly. To this end, ``FDBus`` has added an 
-addressing mode: server name addressing. Each server can have its own name; run a service called ``name server``, 
-which is responsible for assigning addresses to the server, managing the mapping between server names and 
-addresses, parsing the server name, and issuing the server address. The ``name server`` is a bit like the 
-``DNS`` on the internet. To support server name addressing, add a format to the two URLs, as the name and 
-address, as follows:
+It is inconvenient and not intuitive to use the above address to locate the server. The address will 
+change with the networking mode and cannot be deployed flexibly. For this reason, ``FDBus`` has added an 
+addressing mode: server name addressing. Each server can have its own name. A service called ``name server``, 
+is run to assign addresses to the server, manage the mapping between server names and addresses, parse 
+the server name, and issue the server address. The ``name server`` is a bit like the ``DNS`` on the internet. 
+To support server name addressing, a format is added to the two URLs as the name address, as follows:
 
 - svc://servername
 
 The name address is a virtual address. No matter where the server is located, as long as its name and address 
 are unchanged, the client can establish contact with it through this address. If the server calls ``bind()`` to bind 
-the name address (the address starting with svc://), the ``name server`` will assign the actual address (the address 
-starting with tcp:// or file://) and register the name and address to In the mapping table. If the client connects 
-to the name and address, the ``name server`` will look up the actual address of the server according to the name and 
+the name address (the address starting with svc:// ), the ``name server`` will assign the actual address (the address 
+starting with tcp:// or file:// ) to it and register the name and address to the mapping table. If the client connects 
+to the name address, the ``name server`` will look up the actual address of the server according to the name and 
 select the most appropriate actual address to publish to the client. The client establishes a point-to-point direct 
 connection with the server through this address. The following figure shows the process of establishing a connection 
-between the client and the server using the name and address with the help of the ``name server``:
+between the client and the server using the name address with the help of the ``name server``:
 
 .. image:: ./images/3.png
   :width: 600px
 
 First, the client calls connect("svc://medisServer") to establish a connection with the server named mediaServer. 
-Since the name is used, ``FDBus`` will ask the name server for the actual address of the mediaServer. 
+Since the name address is used, ``FDBus`` will ask the ``name server`` for the actual address of the mediaServer. 
 But now mediaServer is not online yet, so the name cannot be resolved, just subscribe to the online 
-notification of the service. Soon after, the server calls bind("svc://mediaServer") to go online. 
-Since the name and address are used, the request will also be sent to the name server. The ``name server`` 
-registers its name, assigns ``UDS`` and ``TCP`` addresses, and returns it to the server. The server is 
-bound to each actual address, and the n``ame server`` is notified after success. The ``name server`` 
+notification of the service. Soon after, the server calls bind("svc://mediaServer") to be online. 
+Since the name address is used, the request will also be sent to the ``name server``. The ``name server`` 
+registers its name, assigns ``UDS`` and ``TCP`` addresses, and returns them to the server. The server is 
+bound to each actual address, and the ``name server`` is notified after success. The ``name server`` 
 issues the server online message and the server address to the entire system: the ``UDS`` address is 
-broadcast to the local client, and the client address is the ``TCP`` address broadcast to other nodes. 
-The client uses the received address to establish a connection with the server, and both the client and 
+broadcast to the local client, and the ``TCP`` address is broadcast to the clients on other nodes. 
+The client establishes a connection with the server using the received address, and both the client and 
 the server can receive the event notification of onOnline().
 
-The name server uses the following rules to assign a server address:
+The ``name server`` uses the following rules to assign a server address:
 
 +--------------+------------------------------+-----------------+
 | Server       |         TCP Address          |   UDS Address   |
@@ -263,35 +262,37 @@ Multi-host networking
 Since the address of the ``name server`` is fixed, the endpoint will automatically connect to the ``name server`` 
 registration (server) or resolution (client) name after the endpoint is started. If there are multiple hosts, 
 each running their own ``name server``, responsible for their respective name services, then these hosts 
-become islands and cannot be connected to each other through service names such as svc://server_name. 
+become isolated islands and cannot be connected to each other through service names such as svc://server_name. 
 Of course, the client can bypass the ``name server`` and directly connect to the server with the actual 
 address, but this cannot be flexibly deployed and networked. In order to support name resolution across 
 networks, a service is required to manage all hosts in the system, and the host information is synchronized 
 to all ``name servers``. These ``name servers`` can establish connections and work together to complete the name 
-service within the entire network. . This service is the host server.
+service within the entire network. This service is the ``host server``.
 
-The working principle of the host server is: the entire network runs a host server, which can be located 
-on any host that everyone can access. All host name servers are connected to the host server, registering 
-their own host. The host server maintains a list of hosts containing the IP addresses of the hosts and 
+The working principle of the ``host server`` is: the entire network runs a ``host server``, which can be located 
+on any host that everyone can access. All host name servers are connected to the ``host server``, registering 
+their own host. The ``host server`` maintains a list of hosts containing the IP addresses of the hosts and 
 synchronizes the tables to all ``name servers`` on the network. The ``name server`` establishes a connection 
-with the name server on all hosts in the network according to the table.
+with the ``name server`` on all hosts in the network according to the table.
 
 Once the ``name servers`` on all hosts are connected in pairs, the service name resolution and service 
 online notification can be completed through a set of internal protocols. For example, when a client on 
-a host requests the local name server to resolve the address corresponding to the service name, the local 
+a host requests the local ``name server`` to resolve the address corresponding to the service name, the local 
 ``name server`` can broadcast the request to all connected ``name servers`` to find services in the entire 
 network. The following is an example diagram of the entire system networking:
 
 .. image:: ./images/4.png
   :width: 600px
 
-In the above figure, a star connection is established between the ``name server`` and the host server, 
-and the ``name server`` and the ``name server`` are connected one after another to form a network. 
-In this system, the main tasks of the ``name server`` and host server are:
+In the above figure, a star connection is established between the ``name server`` and the ``host server``, 
+and the ``name server`` and the ``name server`` are connected one by one to form a network. 
+In this system, the main tasks of the ``name server`` and ``host server`` are:
 
-- ``Name server`` is connected to the host server, and the host is registered to the host server.
-- The host server collects all host information to form a host address table.
-- The host server broadcasts the host address table to all name servers.
+- ``Name server`` connects to the ``host server``, and the host is registered to the ``host server``.
+- The ``host server`` collects all host information to form a host address table.
+- The ``host server`` broadcasts the host address table to all name servers.
+- ``Name server`` gets the address of the name servers on the other hosts through the table and 
+  establish the connection with it.
 - All servers are connected to the local ``name server`` and register the service name with them. 
   The local ``name server`` broadcasts the newly registered service to the local client and all 
   other ``name servers`` in the network.
@@ -304,7 +305,7 @@ In this system, the main tasks of the ``name server`` and host server are:
   mapping tables and return the result to the ``name server`` that initiated the application.
 - The ``name server`` forwards the received return result to the client that initiated the application, 
   and the client establishes a direct connection with the service using the actual address in the result. 
-  In this way, you can find services on all hosts.
+  In this way, you can find all services on all hosts.
 
 As can be seen from the above figure, once the connection is established between the client and the server, 
 all communication is completed through this connection without forwarding through the intermediate link.
@@ -326,11 +327,11 @@ online and offline detection mechanisms:
 
 - There is a reconnection mechanism between endpoints and ``name server`` to ensure that the endpoint 
   can always establish a connection with the ``name server`` after restarting.
-- There is heartbeat detection between the ``name server`` and the host server; once the heartbeat 
-  disappears, the ``name server`` will try to reconnect with the host server to ensure the reliability of 
-  the connection between the ``name server`` and the host server.
-- The connection between the ``name server`` and the ``name server`` is established by the host server: 
-  When the ``name server`` goes online, the host server notifies all other ``name servers`` to establish a 
+- There is heartbeat detection between the ``name server`` and the ``host server``. Once the heartbeat 
+  disappears, the ``name server`` will try to reconnect with the ``host server`` to ensure the reliability of 
+  the connection between the ``name server`` and the ``host server``.
+- The connection between the ``name server`` and the ``name server`` is established by the ``host server``: 
+  When the ``name server`` goes online, the ``host server`` notifies all other ``name servers`` to establish a 
   connection with it, and also informs the ``name server`` to establish a connection with all other 
   ``name servers``.
 - The connection between the client and the server is established by the ``name server``: When the server 
@@ -347,7 +348,7 @@ system is based on the chain of trust, and only by satisfying the necessary secu
 its own security capabilities. For ``FDBus``, there are two prerequisites:
 
 | The most basic premise is the integrity of the ``FDBus`` itself: the ``FDBus`` library running in the 
-  system, the ``name server``, and the host server are all legal and have not been tampered with or replaced, 
+  system, the ``name server``, and the ``host server`` are all legal and have not been tampered with or replaced, 
   otherwise security cannot be guaranteed anyway. This is ensured by the operating system with rights 
   management, secure boot, ``DM-verity/FS-verity``, security upgrade, SELinux and other mechanisms.
 
@@ -359,30 +360,30 @@ its own security capabilities. For ``FDBus``, there are two prerequisites:
 
 Based on these assumptions, the attacks faced by ``FDBus`` mainly come from three aspects:
 
-| 1) The illegal host connects to the ``FDBus`` bus and runs an illegal client to access the server on other hosts; 
+| 1) An illegal host connects to the ``FDBus`` bus and runs an illegal client to access the server on other hosts; 
 | 2) Runs an illegal client on a legitimate host to access the ``FDBus`` server in the host
-| 3) A legitimate client is running a legitimate client, but tries to get data without permission or 
+| 3) A legal client is running on a legal host, but tries to get data without permission or 
   perform an operation without permission.
 
 Based on the above attacks, ``FDBus`` ensures the safe operation of the system from the following aspects:
 
 - **Authentication of the host node**: All hosts joining the ``FDBus`` are divided into different security levels.
-- **Authentication of service access**: all clients are divided into different security levels
-- **Access restrictions**: The server's method calls and event broadcasts are divided into security levels,
-  and the talent can call the method that matches the server security level and the event broadcast that 
+- **Authentication of service access**: All clients are divided into different security levels
+- **Access restrictions**: The server's method calls and event broadcasts are divided into different security levels,
+  so that the client can call the method that matches the server security level and the event broadcast that 
   matches the registration.
 
 Host node authentication
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-A host must establish a connection with the host server if it wants to join the ``FDBus``. The host server 
+A host must establish a connection with the ``host server`` if it wants to join the ``FDBus``. The ``host server`` 
 can authenticate the host by checking the host's IP address or MAC address, and can also determine the 
-validity of the host through the public-private key pair. For a legitimate host, the host server will 
+validity of the host through the public-private key pair. For a legitimate host, the ``host server`` will 
 issue an "``ID card``" for accessing other hosts. After holding the ``ID card``, the hosts can identify each 
 other and give each other access rights.
 
 "``ID card``" is implemented by token. When the ``name server`` on the host initiates a connection, 
-the host server assigns multiple tokens to it, and each token corresponds to a security level. The following 
+the ``host server`` will assign multiple tokens to it, and each token corresponds to a security level. The following 
 table shows the token assignments for each host in a system:
 
 +--------+------------------+------------------+------------------+------------------+
@@ -402,8 +403,8 @@ For example, host 2 uses token 11 to connect to host 1, then in the eyes of host
 of host 2 is 1; if token13 is used, the security level of host 2 is 3, and so on. The number of security 
 levels can be configured according to the project.
 
-The security level of the host is specified after the host server authenticates and authenticates the host. 
-As mentioned above, the host server can identify the host identity according to the host's MAC address or 
+The security level of the host is specified after the ``host server`` identifies and authenticates the host. 
+As mentioned above, the ``host server`` can identify the host identity according to the host's MAC address or 
 other means, and then use the following configuration table to publish the tokens used by the hosts to 
 access each other:
 
@@ -422,15 +423,15 @@ For example:
 | 1) Host 1 connects to host 2 using token22, that is, for host 2, host 1 has a security level of 2;
 | 2) when host 1 connects to host 3, token31 is used, that is, for host 3, The security level of host 1 is level 1.
 
-And so on. For hosts that are not in the table, the host server will not reject the connection for the sake of 
+And so on. For hosts that are not in the table, the ``host server`` will not reject the connection for the sake of 
 openness, but will not issue a token for it. For hosts that do not have a token, the security level is considered 
 to be -1 and there is no level.
 
 Service access authentication
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Just as the host server is responsible for host authentication, the ``name server`` is responsible for the 
-authentication of the service access, and also uses the authentication authentication + token issuing method. 
+Just as the ``host server`` is responsible for host authentication, the ``name server`` is responsible for the 
+authentication of the service access, and also uses the certification authentication + token issuing method. 
 When the server registers the service name with the ``name server``, the ``name server`` allocates multiple 
 tokens at the same time as the address is assigned, and each token corresponds to a security level, as shown 
 in the following table:
@@ -448,17 +449,17 @@ in the following table:
 There are four security levels in the table. For server1, the tokens corresponding to each security level 
 are token10, token11, token12, and token13. For other servers, and so on. When the client connects to server1, 
 it needs to hold one of the four tokens of server1. For example, if the client uses token11 to connect to 
-server1, then in the eyes of server1, the client's security level is 1. If you use token13, then the client's 
+server1, then in the eyes of server1, the client's security level is 1. If token13 is used, then the client's 
 security level is 3, and so on. The number of security levels can be configured as appropriate.
 
-The security level of the client is specified after the ``name server`` authenticates and authenticates the 
-client. When the client connects to the ``name server`` through the UDS, the UDS will also generate the 
-client's credentials to the ``name server``, including the client's uid and guid. Service access authentication 
-is not supported because Windows does not support ``UDS``. For ``QNX``, although ``UDS`` is supported, service 
-access authentication is not supported because the ``SO_PEERCRED`` option is not supported. So currently only Linux 
-can support, and the credentials are attached by the operating system, trustworthy, the client can not fake an 
-identity. According to uid and guid, the ``name server`` can identify the identity of the client, and publish 
-the token used to access other servers through the following configuration table:
+The security level of the host is specified after the ``host server`` identifies and authenticates the host. 
+When the client connects to the ``name server`` through the UDS, the UDS will also send the client's 
+credentials to the ``name server``, including the client's uid and guid. Windows does not support ``UDS``, so 
+it doesn't support service access authentication. For ``QNX``, although ``UDS`` is supported, service access 
+authentication is not supported because the ``SO_PEERCRED`` option is not supported. So currently only Linux 
+can support, and the credentials are attached by the operating system which is trustworthy, the client can not 
+fake an identity. According to uid and guid, the ``name server`` can identify the identity of the client, and 
+publish the token used to access other servers through the following configuration table:
 
 +----------------------+---------+---------+---------+---------+
 |                      | server1 | server2 | server3 | server4 |
@@ -472,12 +473,12 @@ the token used to access other servers through the following configuration table
 
 For example:
 
-| 1) client1 uses server12 with server1, that is, for server1, client1 has a security level of 2; 
-| 2) client1 uses server2 for server2, that is, for server2, client1 has a security level of 2 .
+| 1) Client1 connects to server1 using token12, that is, for server1, client1 has a security level of 2; 
+| 2) Client1 connects to server2 using token22, that is, for server2, client1 has a security level of 2 .
 
-And so on. For clients that are not in the table, for reasons of openness, the ``name server`` will not reject, 
-but will not issue tokens for it. For clients without a token, the security level is considered to be -1, 
-the lowest level.
+And so on. For clients that are not in the table, the ``name server`` will not reject the connection for 
+the sake of openness,but will not issue tokens for it. For clients without a token, the security level is 
+considered to be -1, the lowest level.
 
 When the security policy is enabled, the process of establishing a connection between the client and the 
 server increases the client authentication and token issuance process, as shown in the following figure:
@@ -490,10 +491,10 @@ and the client respectively: all the security level tokens T0-T3 are issued to t
 matching the security level is issued to the client. When the client connects to the server, it will also 
 send the token to the server. The server finds that the received token is consistent with T1 by comparison, 
 so that the client's security level is 1. Suppose a malicious client also connects to the same server: 
-Since the ``name server`` does not recognize its ``UID``, it will not be assigned a token. When the client 
-connects to the server, the server sets its security level to -1, that is, no security level, because the 
-token cannot be given. In this case, by configuring serve, you can only allow access to a limited API to 
-achieve access control.
+Since the ``name server`` can not recognize its ``UID``, it will not be assigned a token. When the client 
+trying to connect to the server, the server sets its security level to -1 because the token cannot be given, 
+that is, no security level, . In this case, by configuring the server, the client can only be allowed to access 
+to a limited API, so that the access control is realized.
 
 Security level and access rights
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -502,7 +503,8 @@ When determining the security level of the client, the server needs to integrate
 the client itself and the security level of the host where the client is located: the highest security 
 level of the client does not exceed the security level of the host where it resides. With a security 
 level, the server can define different levels of access: at which levels, which methods can be called, 
-and which messages are broadcast. The following figure shows the partitioning of a server's access rights:
+and which broadcast messages are monitored. The following figure shows the partitioning of a server's 
+access rights:
 
 .. image:: ./images/6.png
   :width: 600px
@@ -512,7 +514,7 @@ file. The specific method is to segment the method ID and the notification ID, a
 different segments correspond to different security levels. For the method call, if the security level 
 of the client does not reach the required level, the server will refuse to execute; for the message 
 notification, if the client does not have the permission, the message of the high security level cannot 
-be registered, and thus the change notification of the message is not received.
+be registered, and thus the change notification of the message will not be received.
 
 Security policy configuration file
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -520,76 +522,81 @@ Security policy configuration file
 The security policy file is located under ``/etc/fdbus`` by default.
 
 Parameter configuration file /etc/fdbus/fdbus.fdb
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+"""""""""""""""""""""""""""""""""""""""""""""""""
 
 This file configures the overall security parameters, including the following fields:
 
-- *Number_of_secure_levels*: number type, how many security levels are configured
-- *Token_length*: number type, configured for the length of the token in bytes.
+- **number_of_secure_levels**: number type, how many security levels are configured
+- **token_length**: number type, configured for the length of the token in bytes.
 
 Host configuration file /etc/fdbus/host.fdb
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+"""""""""""""""""""""""""""""""""""""""""""
 
 This file configures the security parameters of each host, including the following fields:
 
-- *host*: object type, the key of each element is the host name ("host_name"), and the value is the array type, which contains the security policy of the corresponding host.
-- *host."host_name"[...]*: object type, which indicates the configuration of a security level.
-- *host."host_name"[...].level*: number type, indicating the security level
-- *host."host_name"[...].ip*: array type, each element is the host ID represented by the IP address, meaning: the host with these IP addresses, the security level is host."host_name"[.. .].level. If the IP is a "default" string, it means that there is no default security level for the host in the configuration file.
-- *host."host_name"[...].mac*: array type, each element is the host ID represented by the MAC address, meaning the same as host."host_name"[...].ip.
+- **host**: object type, the key of each element is the host name ("host_name"), and the value 
+  is the array type, which contains the security policy of the corresponding host.
+- **host."host_name"[...]**: object type, which indicates the configuration of a security level.
+- **host."host_name"[...].level**: number type, indicating the security level.
+- **host."host_name"[...].ip**: array type, each element is the host ID represented by the IP address, 
+  meaning: the host with these IP addresses, the security level is ``host."host_name"[...].level``. 
+  If the IP is a "default" string, it means that there is no default security level for the host in 
+  the configuration file.
+- **host."host_name"[...].mac**: array type, each element is the host ID represented by the MAC address, 
+  meaning the same as ``host."host_name"[...].ip``.
 
 Server Configuration file /etc/fdbus/server/server_name.fdb
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 The Server configuration file is located in the ``/etc/fdbus/server`` directory. Each server has a 
 configuration file. The file name specification is: ``server_name+.fdb suffix``, which contains the 
 following fields:
 
-- *method*: The array type, the security policy that the configuration method calls.
-- *method[...]*: The object type defines the security policy for a collection of methods.
-- *method[...]*.level:number type, indicating the security level
-- *method[...]*.from:number type, which represents the minimum value of the method set. If it 
+- **method**: array type, the security policy that the configuration method calls.
+- **method[...]**: object type, defines the security policy for a collection of methods.
+- **method[...].level**: number type, indicating the security level
+- **method[...].from**: number type, which represents the minimum value of the method set. If it 
   is a "default" string, it means that there is no default security level for the method of 
   configuring the security level.
-- *method[...]*.to:number type, which represents the maximum value of the method set. The 
-  overall meaning is: If a method ID is greater than or equal to method[...].from, less than 
-  or equal to method[...].to, its security level is method[...].level. Only clients with a 
+- **method[...].to**: number type, which represents the maximum value of the method set. The 
+  overall meaning is: If a method ID is greater than or equal to **method[...].from**, less than 
+  or equal to **method[...].to**, its security level is **method[...].level**. Only clients with a 
   security level greater than or equal to this level can call methods in this range.
-- *event*: The array type is similar to the method except that it is configured with a 
+- **event**: array type, similar to the method except that it is configured with a 
   security policy for broadcast monitoring. Only clients that meet the security level have 
   the right to listen to the corresponding event.
-- *permission*: array type, configure the access permissions of the server.
-- *permission[...]*: object type, which defines the configuration of a security level.
-- *permission[...]*.level:number type, indicating the security level.
-- *permission[...]*.gid:array type, if each element is of type string, it means group name, 
+- **permission**: array type, configuring the access permissions of the server.
+- **permission[...]**: object type, which defines the configuration of a security level.
+- **permission[...].level**: number type, indicating the security level.
+- **permission[...].gid**: array type, if the element is string type, it means group name, 
   if it is number type, it means group id. The meaning of the security policy is: If a client 
-  is in a certain group specified by the array, its security level is permission[...].level. 
+  is in a certain group specified by the array, its security level is **permission[...].level**. 
   If the field is a "default" string, it means that the client's default security level cannot 
   be found for the security policy.
-- *permission[...]*.uid:array type, if each element is of type string, it means user name, if it 
+- **permission[...].uid**: array type, if the element is string type, it means user name, if it 
   is number type, it means user id. The meaning of the security policy is: If the client id of 
-  a client is contained in an array, its security level is permission[...].level.
+  a client is contained in an array, its security level is **permission[...].level**.
 
 
 Debugging and logging
 ---------------------
 
-The ``DBus`` monitor from DBus is impressive: it can crawl all the messages on the ``DBus`` bus, 
-and it can set filters to crawl specific messages. The captured messages are very readable, 
+The ``DBus`` monitor from ``DBus`` is impressive: it can crawl all the messages on the ``DBus`` bus, 
+and it can also set filters to crawl specific messages. The captured messages are very readable, 
 and various data structures and field names can be displayed. Similarly, ``FDBus`` also provides a 
 tool for crawling messages - log server, and its function is stronger. In addition to ``FDBus`` 
-messages, it also supports debugging log output, and combines FDBus messages and debug logs to 
+messages, it also supports debugging log output, and combines ``FDBus`` messages and debug logs to 
 facilitate timing analysis.
 
-The log server is a normal server that is hung on the ``FDBus``. Each endpoint contains its client, 
+The log server is a normal server that mounted on the ``FDBus``. Each endpoint contains its client, 
 as shown in the following figure:
 
 .. image:: ./images/7.png
   :width: 600px
 
-Like the normal server, the log server runs up and registers with the name server, which broadcasts 
-the LogClient in each endpoint. Later, when the endpoint sends an FDBus message, it will also copy 
-one copy to the log server through LogClient. In addition to the FDBus message content, the sent 
+Like the normal server, the log server runs up and registers with the ``name server``, which broadcasts 
+the LogClient in each endpoint. Later, when the endpoint sends an ``FDBus`` message, it will also send
+a copy to the log server through LogClient. In addition to the ``FDBus`` message content, the sent 
 data also includes:
 
 - Timestamp
@@ -602,7 +609,7 @@ is easy to read, visually display the name and value of each member in the messa
 the array type (repeated type) and nested type.
 
 For debug log output, ``FDBus`` has its own API and supports the following output levels 
-(priority increments):
+(In ascending order of priority):
 
 - Debug
 - Information
@@ -612,7 +619,7 @@ For debug log output, ``FDBus`` has its own API and supports the following outpu
 
 As long as the log server is started, when the endpoint prints the debug log through the API, 
 these logs are sent to the log server through LogClient. The log server can combine the debug 
-log and the ``FDBus`` message to output, or you can choose to output specific content separately.
+log and the ``FDBus`` message to output, or can choose to output specific content separately.
 
 Regardless of which host the endpoint is deployed on, the log server can collect its ``FDBus`` 
 messages and debug logs. The entire system can only run one log server, which is not convenient 
@@ -628,10 +635,10 @@ The following figure is a block diagram of the internal components of ``FDBus``:
 .. image:: ./images/8.png
   :width: 600px
 
-- *Base platform abstraction layer* - contains system-independent abstractions for adapting to different operating systems
-- *Advanced platform abstraction layer* - a middleware process model that contains the basic components that make up a process
-- *IPC layer* - interprocess communication model, including the basic components for implementing IPC communication
-- *Server layer* - provides service name resolution, networking, logging and debugging services
+- **Base platform abstraction layer** - contains system-independent abstractions for adapting to different operating systems
+- **Advanced platform abstraction layer** - a middleware process model that contains the basic components that make up a process
+- **IPC layer** - interprocess communication model, including the basic components for implementing ``IPC`` communication
+- **Server layer** - provides service name resolution, networking, logging and debugging services
 
 Conclusion
 ----------
@@ -639,11 +646,11 @@ Conclusion
 ``FDBus`` provides a distributed ``IPC`` communication mechanism to support client-server communication 
 across hosts, using service names instead of physical addresses as addressing modes, ensuring connectivity 
 dynamics and reliability through various services and heartbeat reconnection mechanisms, thereby ensuring 
-the system The nodes inside can be dynamically added and deleted, dynamically deployed, and arbitrarily 
+the nodes inside the system can be dynamically added and deleted, dynamically deployed, and arbitrarily 
 restarted without managing the startup sequence and dependencies, thereby binding the separate modules 
 together to form a solid whole. As an important part of ``IPC``, protocol buffer supports a variety of complex 
-data types, can define interfaces with idl and support automatic code generation, greatly reducing 
-serialization and deserialization. FDBus supports security policies, differentiates security levels from 
+data types, can define interfaces with idl and support automatic code generation, greatly reducing the job of 
+serialization and deserialization. ``FDBus`` supports security policies, differentiates security levels from 
 access, and ensures the security of the entire system.
 
 ``FDBus`` is not only an ``IPC`` mechanism, but also a middleware development framework, which contains common 
