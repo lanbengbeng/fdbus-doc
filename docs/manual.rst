@@ -37,7 +37,7 @@ Background
 ----------
 
 Unlike other cores, ``Linux`` has not had its own unique and easy-to-use ``IPC`` mechanism, 
-while``Windows``, ``Mac OS``, and ``QNX`` all have such a mechanism. Even Linux-based ``Android`` 
+while ``Windows``, ``Mac OS``, and ``QNX`` all have such a mechanism. Even Linux-based ``Android`` 
 has developed a binder for ``IPC``. The ``Linux kernel`` only provides some of the most basic 
 components - socket, pipe, message queue, shared memory, and so on. This is also in line with 
 the ``Linux`` philosophy which is that each tool only does one thing and does it well. But the 
