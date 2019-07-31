@@ -102,7 +102,7 @@ that you have to pay for closed source software.
     * 2. Asynchronous request - reply with timeout
     * 3. Unanswered command request
     * 4. Registration-release mode for multicast
-- ``IPC`` message realizes serialization and deserialization by Protocol buffer. It supports IDL code generation 
+- ``IPC`` message implements serialization and deserialization by Protocol buffer. It supports IDL code generation 
   which is efficient and simple. It also supports raw data format and is convenient for large data transmission
 - Reliable heartbeat and reconnection mechanisms ensure that all parties remain connected regardless 
   of network conditions, regardless of which service is back online or restarted
@@ -556,8 +556,7 @@ following fields:
 - **method[...]**: object type, defines the security policy for a collection of methods.
 - **method[...].level**: number type, indicating the security level
 - **method[...].from**: number type, which represents the minimum value of the method set. If it 
-  is a "default" string, it means that there is no default security level for the method of 
-  configuring the security level.
+  is a "default" string, it means that there is no default security level for the configuring method.
 - **method[...].to**: number type, which represents the maximum value of the method set. The 
   overall meaning is: If a method ID is greater than or equal to **method[...].from**, less than 
   or equal to **method[...].to**, its security level is **method[...].level**. Only clients with a 
