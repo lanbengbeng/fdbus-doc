@@ -140,7 +140,7 @@ Middleware model based on FDBus
 The following figure is an example of a middleware layer based on ``FDBus`` development:
 
 .. image:: ./images/1.png
-  :width: 600px
+  :width: 800px
 
 The middleware layer contains multiple processes, whether they are on the same host system or 
 on different host systems. Each process can run multiple threads. ``FDBus`` runs a specific event 
@@ -196,7 +196,7 @@ provides the same service, so the client can choose any address to establish a c
 figure is a schematic diagram of the ``FDBus`` server address binding:
 
 .. image:: ./images/2.png
-  :width: 600px
+  :width: 800px
 
 In the figure above, the server is bound to a ``UDS`` address: ``file:///tmp/fdb-ipc1``. The client on the 
 same host can use this address to initiate a connection. Of course, it can also connect to any other address, 
@@ -227,7 +227,7 @@ connection with the server through this address. The following figure shows the 
 between the client and the server using the name address with the help of the ``name server``:
 
 .. image:: ./images/3.png
-  :width: 600px
+  :width: 800px
 
 First, the client calls connect("svc://medisServer") to establish a connection with the server named mediaServer. 
 Since the name address is used, ``FDBus`` will ask the ``name server`` for the actual address of the mediaServer. 
@@ -282,7 +282,7 @@ a host requests the local ``name server`` to resolve the address corresponding t
 network. The following is an example diagram of the entire system networking:
 
 .. image:: ./images/4.png
-  :width: 600px
+  :width: 800px
 
 In the above figure, a star connection is established between the ``name server`` and the ``host server``, 
 and the ``name server`` and the ``name server`` are connected one by one to form a network. 
@@ -484,7 +484,7 @@ When the security policy is enabled, the process of establishing a connection be
 server increases the client authentication and token issuance process, as shown in the following figure:
 
 .. image:: ./images/5.png
-  :width: 600px
+  :width: 800px
 
 Compared with the previous timing, in the above figure, the ``name server`` issues tokens to the server 
 and the client respectively: all the security level tokens T0-T3 are issued to the server; only the token 
@@ -507,7 +507,7 @@ and which broadcast messages are monitored. The following figure shows the parti
 access rights:
 
 .. image:: ./images/6.png
-  :width: 600px
+  :width: 800px
 
 Each server can define access rights corresponding to different security levels through the configuration 
 file. The specific method is to segment the method ID and the notification ID, and the IDs falling in 
@@ -591,7 +591,7 @@ The log server is a normal server that mounted on the ``FDBus``. Each endpoint c
 as shown in the following figure:
 
 .. image:: ./images/7.png
-  :width: 600px
+  :width: 800px
 
 Like the normal server, the log server runs up and registers with the ``name server``, which broadcasts 
 the LogClient in each endpoint. Later, when the endpoint sends an ``FDBus`` message, it will also send
@@ -632,7 +632,7 @@ FDBus internal structure
 The following figure is a block diagram of the internal components of ``FDBus``:
 
 .. image:: ./images/8.png
-  :width: 600px
+  :width: 800px
 
 - **Base platform abstraction layer** - contains system-independent abstractions for adapting to different operating systems
 - **Advanced platform abstraction layer** - a middleware process model that contains the basic components that make up a process
