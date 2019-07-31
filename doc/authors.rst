@@ -1,6 +1,6 @@
 Authors
 -------
 
-* Jeremy Czhen
+* Jeremy ChenZhen
 
 
