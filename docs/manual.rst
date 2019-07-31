@@ -656,7 +656,7 @@ access, and ensures the security of the entire system.
 components and basic models that are often used in the development of middleware, providing cross-platform 
 and powerful support for middleware development.
 
-After the source code is open, ``FDBus`` expects more developers to use, test and improve, and become one 
+The source code of ``FDBus`` is open now, which expects more developers to use, test and improve, and become one 
 of the options for many middleware development frameworks.
 
 
