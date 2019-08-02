@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 Welcome to Read the FDBus's documentation!
-==================================================
+==========================================
 
 Contents:
 
@@ -22,6 +22,5 @@ Indices and tables
 ==================
 
 * :ref:`genindex`
-* :ref:`modindex`
 * :ref:`search`
 
