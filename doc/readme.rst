@@ -5,7 +5,7 @@ Introduction
 
 `FDBus Documentation <https://fdbus.readthedocs.io/en/latest/?badge=latest>`_
 
-`.. image:: https://readthedocs.org/projects/fdbus/badge/?version=latest <https://fdbus.readthedocs.io/en/latest/?badge=latest>>`_
+`.. image:: https://readthedocs.org/projects/fdbus/badge/?version=latest <https://fdbus.readthedocs.io/en/latest/?badge=latest>`_
 
 - Inter-Process Communication (``IPC``) within single host and cross the network
 - System abstraction (``Windows``, ``Linux``, ``QNX``)
